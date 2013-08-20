@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
     setLayout(layout);
     setWindowTitle("YAPS");
     setWindowFlags(Qt::Window);
-    resize(QSize(800, 600));
+    setMinimumSize(QSize(200, 150));
     createTrayIcon();
 
     Actions::instance().setMainWindow(this);

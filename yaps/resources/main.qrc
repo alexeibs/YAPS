@@ -4,5 +4,9 @@
         <file alias="add">add_24x24.png</file>
         <file alias="delete">delete_24x24.png</file>
         <file alias="edit">edit_24x24.png</file>
+        <file alias="copy">copy_24x24.png</file>
+    </qresource>
+    <qresource prefix="/misc">
+        <file>init.sql</file>
     </qresource>
 </RCC>

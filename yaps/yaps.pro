@@ -6,7 +6,7 @@
 
 CONFIG += c++11
 
-QT       += core gui
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,12 +16,20 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    MainActions.cpp
+    MainActions.cpp \
+    Database.cpp \
+    View.cpp \
+    PasswordsModel.cpp
 
 HEADERS  += mainwindow.h \
-    MainActions.h
+    MainActions.h \
+    Database.h \
+    View.h \
+    PasswordsModel.h
 
 RESOURCES += \
     resources/main.qrc
 
-debug:DEFINES += DEBUG_VERSION
+build_pass:CONFIG(debug, debug|release): {
+    DEFINES += DEBUG_VERSION
+}

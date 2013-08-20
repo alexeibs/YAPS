@@ -1,16 +1,15 @@
 #include <QApplication>
 #include <QScopedPointer>
 #include <QSharedMemory>
+#include <QAbstractItemView>
 
 #include "mainwindow.h"
 #include "MainActions.h"
-
-#include <QTextEdit>
+#include "Database.h"
 
 #define YAPS_ID "YAPS-6d049d5f-2a4a-4910-8713-249dacbbd700"
 
 static QSharedMemory* createSharedMemory();
-static void setupMainWindow(MainWindow& mainWindow);
 
 int main(int argc, char *argv[])
 {
@@ -21,8 +20,16 @@ int main(int argc, char *argv[])
     application.setApplicationName("YAPS");
     application.setWindowIcon(QIcon(":/icons/app"));
 
-    MainWindow mainWindow;
-    setupMainWindow(mainWindow);
+    if (!setupDatabase())
+        return 1;
+
+    MainWindow mainWindow; // MainWindow should be created before first call Actions::instance
+
+    auto& actions = Actions::instance();
+    actions.initialize();
+
+    mainWindow.setMainWidget(actions.view());
+    mainWindow.toggleWindow();
 
     return application.exec();
 }
@@ -35,15 +42,4 @@ QSharedMemory *createSharedMemory()
     if (!shared->create(1))
         return nullptr;
     return shared.take();
-}
-
-void setupMainWindow(MainWindow& mainWindow)
-{
-    auto& actions = Actions::instance();
-    actions.addAction(QObject::tr("Add Password"), QIcon(":/icons/add"));
-    actions.addAction(QObject::tr("Edit Password"), QIcon(":/icons/edit"));
-    actions.addAction(QObject::tr("Remove Password"), QIcon(":/icons/delete"));
-
-    mainWindow.setMainWidget(new QTextEdit(&mainWindow));
-    mainWindow.toggleWindow();
 }
