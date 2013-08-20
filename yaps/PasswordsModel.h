@@ -4,7 +4,6 @@
 #include <QSqlQueryModel>
 
 struct PasswordRecord {
-    int id;
     QString name;
     QString password;
     unsigned int timestamp;
@@ -13,10 +12,16 @@ struct PasswordRecord {
 class PasswordsModel : public QSqlQueryModel { Q_OBJECT
 public:
     explicit PasswordsModel(QObject *parent = 0);
-
     int nameColumnIndex() const;
-    void getRecord(const QString& name, PasswordRecord&) const;
-    void setRecord(const PasswordRecord&);
+    bool isValid(const QModelIndex&) const;
+    bool getRecord(const QModelIndex&, PasswordRecord&) const;
+    bool getRecord(const QString& name, PasswordRecord&) const;
+    bool hasRecord(const QString& name);
+    bool addOrSetRecord(const PasswordRecord&);
+    void removeRecord(const QModelIndex&);
+
+private:
+    void refresh();
 };
 
 #endif // PASSWORDSMODEL_H

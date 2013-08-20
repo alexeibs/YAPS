@@ -15,11 +15,6 @@
 PasswordsModel* makeModel(QObject* parent)
 {
     PasswordsModel* model = new PasswordsModel(parent);
-    model->setQuery("SELECT * FROM passwords ORDER BY name");
-    model->setHeaderData(0, Qt::Horizontal, QObject::tr("Id"));
-    model->setHeaderData(1, Qt::Horizontal, QObject::tr("Name"));
-    model->setHeaderData(2, Qt::Horizontal, QObject::tr("Password"));
-    model->setHeaderData(3, Qt::Horizontal, QObject::tr("Date"));
     return model;
 }
 

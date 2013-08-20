@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     auto label = new QLabel("YAPS", this);
     auto layout = new QHBoxLayout;
+    layout->setSpacing(0);
     layout->addWidget(m_toolbar);
     layout->addWidget(label, 1, Qt::AlignCenter);
     layout->setContentsMargins(0, 0, 0, 0);

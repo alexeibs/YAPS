@@ -7,6 +7,8 @@
 #include "Database.h"
 #include "View.h"
 #include "SecureClipboard.h"
+#include "Crypto.h"
+#include "PasswordEditDialog.h"
 
 #include <QMessageBox>
 
@@ -48,17 +50,17 @@ void Actions::initialize()
 
     // setup signals & slots
     QAction* action;
-    action = createAction(QObject::tr("Copy to Clipboard"), QIcon(":/icons/copy"));
+    action = createAction(tr("Copy to Clipboard"), QIcon(":/icons/copy"));
     connect(action, SIGNAL(triggered()), this, SLOT(copyToClipboard()));
     m_mainWindow->addActionIntoToolbar(nullptr);
 
-    action = createAction(QObject::tr("Add Password"), QIcon(":/icons/add"));
+    action = createAction(tr("Add Password"), QIcon(":/icons/add"));
     connect(action, SIGNAL(triggered()), this, SLOT(addPassword()));
 
-    action = createAction(QObject::tr("Edit Password"), QIcon(":/icons/edit"));
+    action = createAction(tr("Edit Password"), QIcon(":/icons/edit"));
     connect(action, SIGNAL(triggered()), this, SLOT(editPassword()));
 
-    action = createAction(QObject::tr("Remove Password"), QIcon(":/icons/delete"));
+    action = createAction(tr("Remove Password"), QIcon(":/icons/delete"));
     connect(action, SIGNAL(triggered()), this, SLOT(deletePassword()));
 }
 
@@ -71,21 +73,52 @@ QAction* Actions::createAction(const QString& name, const QIcon& icon)
 
 void Actions::copyToClipboard()
 {
-    QMessageBox::information(0, "info", "copy");
-    SecureClipboard::instance().setText("Testing SecureClipboard...");
+    PasswordRecord record;
+    if (m_model->getRecord(m_view->currentIndex(), record)) {
+        auto& crypto = Crypto::instance();
+        QString decrypted;
+        crypto.decrypt(record.password, decrypted);
+        SecureClipboard::instance().setText(const_cast<QString&>(decrypted));
+        crypto.erase(decrypted);
+    }
 }
 
 void Actions::addPassword()
 {
-    QMessageBox::information(0, "info", "add");
+    PasswordRecord record;
+    PasswordEditDialog dialog(m_mainWindow, tr("New password"), record);
+    if (dialog.exec() == QDialog::Rejected)
+        return;
+    if (m_model->hasRecord(record.name)) {
+        auto userAnswer = QMessageBox::question(m_mainWindow, tr("Confirm")
+            , tr("Password \"%1\" already exists. Overwrite it?").arg(record.name));
+        if (userAnswer != QMessageBox::Yes)
+            return;
+    }
+    auto lastIndex = m_view->currentIndex();
+    if (m_model->addOrSetRecord(record))
+        m_view->setCurrentIndex(lastIndex);
 }
 
 void Actions::editPassword()
 {
-    QMessageBox::information(0, "info", "edit");
+    auto lastIndex = m_view->currentIndex();
+    if (!m_model->isValid(lastIndex))
+        return;
+    PasswordRecord record;
+    if (m_model->getRecord(m_view->currentIndex(), record)) {
+        PasswordEditDialog dialog(m_mainWindow, tr("Edit password"), record);
+        dialog.setNameReadOnly(true);
+        if (dialog.exec() == QDialog::Rejected)
+            return;
+        if (m_model->addOrSetRecord(record))
+            m_view->setCurrentIndex(lastIndex);
+    }
 }
 
 void Actions::deletePassword()
 {
-    QMessageBox::information(0, "info", "delete");
+    auto lastIndex = m_view->currentIndex();
+    m_model->removeRecord(m_view->currentIndex());
+    m_view->setCurrentIndex(lastIndex);
 }
