@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/icons">
-        <file>app.png</file>
+        <file alias="app">app.png</file>
+        <file alias="add">add_24x24.png</file>
+        <file alias="delete">delete_24x24.png</file>
+        <file alias="edit">edit_24x24.png</file>
     </qresource>
 </RCC>

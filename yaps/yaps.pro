@@ -15,9 +15,13 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    MainActions.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    MainActions.h
 
 RESOURCES += \
     resources/main.qrc
+
+debug:DEFINES += DEBUG_VERSION

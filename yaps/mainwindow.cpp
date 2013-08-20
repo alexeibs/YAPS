@@ -7,6 +7,7 @@
 #include <QCloseEvent>
 #include <QSystemTrayIcon>
 #include <QApplication>
+#include <QToolBar>
 
 #ifdef Q_OS_WIN
 #include "qt_windows.h"
@@ -16,37 +17,65 @@
 #define TOGGLE_WINDOW_HOTKEY_CODE (0x59)
 #endif
 
+#include "MainActions.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
+    m_toolbar = new QToolBar;
+
     auto label = new QLabel("YAPS", this);
     auto layout = new QVBoxLayout;
-    layout->addWidget(label, 0, Qt::AlignCenter);
+    layout->addWidget(m_toolbar);
+    layout->addWidget(label, 1, Qt::AlignCenter);
+    layout->setContentsMargins(0, 0, 0, 0);
+
     setLayout(layout);
     setWindowTitle("YAPS");
     setWindowFlags(Qt::Window);
     resize(QSize(800, 600));
     createTrayIcon();
+
+    Actions::instance().setMainWindow(this);
 }
 
 MainWindow::~MainWindow()
 {
+    Actions::instance().setMainWindow(nullptr);
 #ifdef Q_OS_WIN
     // register global hotkey
     UnregisterHotKey((HWND)winId(), TOGGLE_WINDOW_HOTKEY);
 #endif
 }
 
+void MainWindow::addActionIntoToolbar(QAction* action)
+{
+    if (action)
+        m_toolbar->addAction(action);
+    else
+        m_toolbar->addSeparator();
+}
+
+void MainWindow::setMainWidget(QWidget* widget)
+{
+    auto mainLayout = dynamic_cast<QBoxLayout*>(layout());
+    auto oldItem = mainLayout->itemAt(mainLayout->count() - 1);
+    auto oldWidget = oldItem->widget();
+    mainLayout->removeItem(oldItem);
+    mainLayout->addWidget(widget, 1);
+    delete oldWidget;
+}
+
 void MainWindow::createTrayIcon()
 {
     m_toggleAction = new QAction(tr("&Hide"), this);
-    m_quitAction = new QAction(tr("&Quit"), this);
+    auto quitAction = new QAction(tr("&Quit"), this);
     connect(m_toggleAction, SIGNAL(triggered()), this, SLOT(toggleWindow()));
-    connect(m_quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+    connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 
     m_trayMenu = new QMenu(this);
     m_trayMenu->addAction(m_toggleAction);
-    m_trayMenu->addAction(m_quitAction);
+    m_trayMenu->addAction(quitAction);
 
     m_trayIcon = new QSystemTrayIcon(this);
     m_trayIcon->setContextMenu(m_trayMenu);
@@ -81,11 +110,15 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
         toggleWindow();
 }
 
+#ifdef DEBUG_VERSION
+void MainWindow::closeEvent(QCloseEvent*) {}
+#else
 void MainWindow::closeEvent(QCloseEvent* event)
 {
     toggleWindow();
     event->ignore();
 }
+#endif
 
 #ifdef Q_OS_WIN
 bool MainWindow::nativeEvent(const QByteArray&, void *message, long *result)

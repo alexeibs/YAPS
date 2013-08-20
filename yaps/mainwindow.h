@@ -4,10 +4,15 @@
 #include <QWidget>
 #include <QSystemTrayIcon>
 
+class QToolBar;
+
 class MainWindow : public QWidget { Q_OBJECT
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+    void addActionIntoToolbar(QAction*);
+    void setMainWidget(QWidget*);
 
 public slots:
     void toggleWindow();
@@ -26,9 +31,9 @@ private:
 
 private:
     QAction* m_toggleAction;
-    QAction* m_quitAction;
     QMenu* m_trayMenu;
     QSystemTrayIcon* m_trayIcon;
+    QToolBar* m_toolbar;
 };
 
 #endif // MAINWINDOW_H
