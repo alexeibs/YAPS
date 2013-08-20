@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 
 #include <QLabel>
-#include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QAction>
 #include <QMenu>
 #include <QCloseEvent>
@@ -23,9 +23,10 @@ MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
     m_toolbar = new QToolBar;
+    m_toolbar->setOrientation(Qt::Vertical);
 
     auto label = new QLabel("YAPS", this);
-    auto layout = new QVBoxLayout;
+    auto layout = new QHBoxLayout;
     layout->addWidget(m_toolbar);
     layout->addWidget(label, 1, Qt::AlignCenter);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -33,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
     setLayout(layout);
     setWindowTitle("YAPS");
     setWindowFlags(Qt::Window);
-    setMinimumSize(QSize(200, 150));
+    setMinimumSize(QSize(150, 200));
     createTrayIcon();
 
     Actions::instance().setMainWindow(this);

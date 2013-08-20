@@ -19,13 +19,15 @@ SOURCES += main.cpp\
     MainActions.cpp \
     Database.cpp \
     View.cpp \
-    PasswordsModel.cpp
+    PasswordsModel.cpp \
+    SecureClipboard.cpp
 
 HEADERS  += mainwindow.h \
     MainActions.h \
     Database.h \
     View.h \
-    PasswordsModel.h
+    PasswordsModel.h \
+    SecureClipboard.h
 
 RESOURCES += \
     resources/main.qrc

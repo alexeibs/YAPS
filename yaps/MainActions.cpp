@@ -6,6 +6,7 @@
 #include "PasswordsModel.h"
 #include "Database.h"
 #include "View.h"
+#include "SecureClipboard.h"
 
 #include <QMessageBox>
 
@@ -71,6 +72,7 @@ QAction* Actions::createAction(const QString& name, const QIcon& icon)
 void Actions::copyToClipboard()
 {
     QMessageBox::information(0, "info", "copy");
+    SecureClipboard::instance().setText("Testing SecureClipboard...");
 }
 
 void Actions::addPassword()
