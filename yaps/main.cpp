@@ -6,6 +6,7 @@
 #include "mainwindow.h"
 #include "MainActions.h"
 #include "Database.h"
+#include "Crypto.h"
 
 #define YAPS_ID "YAPS-6d049d5f-2a4a-4910-8713-249dacbbd700"
 
@@ -22,6 +23,8 @@ int main(int argc, char *argv[])
 
     if (!setupDatabase())
         return 1;
+    if (!Crypto::instance().getGlobalPassword())
+        return 2;
 
     MainWindow mainWindow; // MainWindow should be created before first call Actions::instance
 

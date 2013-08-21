@@ -12,9 +12,9 @@
 #ifdef Q_OS_WIN
 #include "qt_windows.h"
 #define TOGGLE_WINDOW_HOTKEY 0x0001
- // Ctrl + Shift + Y
+ // Ctrl + Shift + Q
 #define TOGGLE_WINDOW_HOTKEY_MOD (MOD_CONTROL | MOD_SHIFT)
-#define TOGGLE_WINDOW_HOTKEY_CODE (0x59)
+#define TOGGLE_WINDOW_HOTKEY_CODE (0x51)
 #endif
 
 #include "MainActions.h"
@@ -112,7 +112,7 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
         toggleWindow();
 }
 
-#ifdef DEBUG_VERSION
+#ifndef QT_NO_DEBUG
 void MainWindow::closeEvent(QCloseEvent*) {}
 #else
 void MainWindow::closeEvent(QCloseEvent* event)

@@ -7,7 +7,8 @@ class Crypto : public QObject { Q_OBJECT
 public:
     static Crypto& instance();
 
-    void encrypt(QString& input, QString& output);
+    bool getGlobalPassword();
+    void encrypt(QString& text);
     void decrypt(const QString& input, QString& output);
     void erase(QString& stringToErase);
 
@@ -17,6 +18,9 @@ private:
     Crypto(Crypto&&) = delete;
     void operator=(const Crypto&) = delete;
     void operator=(Crypto&&) = delete;
+
+private:
+    QString m_globalPassword;
 };
 
 #endif // CRYPTO_H

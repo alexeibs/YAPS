@@ -8,8 +8,7 @@ struct PasswordRecord;
 
 class PasswordEditDialog : public QDialog { Q_OBJECT
 public:
-    PasswordEditDialog(QWidget *parent
-        , const QString& title, PasswordRecord&);
+    PasswordEditDialog(const QString& title, PasswordRecord&);
     void setNameReadOnly(bool readOnly);
 
 public slots:

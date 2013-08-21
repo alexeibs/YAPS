@@ -78,7 +78,7 @@ void Actions::copyToClipboard()
         auto& crypto = Crypto::instance();
         QString decrypted;
         crypto.decrypt(record.password, decrypted);
-        SecureClipboard::instance().setText(const_cast<QString&>(decrypted));
+        SecureClipboard::instance().setText(decrypted);
         crypto.erase(decrypted);
     }
 }
@@ -86,7 +86,7 @@ void Actions::copyToClipboard()
 void Actions::addPassword()
 {
     PasswordRecord record;
-    PasswordEditDialog dialog(m_mainWindow, tr("New password"), record);
+    PasswordEditDialog dialog(tr("New password"), record);
     if (dialog.exec() == QDialog::Rejected)
         return;
     if (m_model->hasRecord(record.name)) {
@@ -107,7 +107,7 @@ void Actions::editPassword()
         return;
     PasswordRecord record;
     if (m_model->getRecord(m_view->currentIndex(), record)) {
-        PasswordEditDialog dialog(m_mainWindow, tr("Edit password"), record);
+        PasswordEditDialog dialog(tr("Edit password"), record);
         dialog.setNameReadOnly(true);
         if (dialog.exec() == QDialog::Rejected)
             return;

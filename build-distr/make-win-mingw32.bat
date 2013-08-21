@@ -1,5 +1,6 @@
 set QT_DIR=c:\Qt\Qt5.1.0\5.1.0\mingw48_32
 set BUILD_DIR=..\build-yaps-Desktop_Qt_5_1_0_MinGW_32bit-Release\release
+set CRYPTO_DIR=..\cryptopp562\release
 
 del /Q /F /S *.exe
 del /Q /F /S *.dll
@@ -17,4 +18,5 @@ xcopy /Y /R "%QT_DIR%\bin\Qt5Gui.dll" "%CD%\"
 xcopy /Y /R "%QT_DIR%\bin\Qt5Widgets.dll" "%CD%\"
 xcopy /Y /R "%QT_DIR%\bin\Qt5Sql.dll" "%CD%\"
 xcopy /Y /R "%QT_DIR%\plugins\sqldrivers\qsqlite.dll" "%CD%\sqldrivers\"
+xcopy /Y /R "%CRYPTO_DIR%\cryptopp562.dll" "%CD%\"
 xcopy /Y /R "%BUILD_DIR%\yaps.exe" "%CD%\"

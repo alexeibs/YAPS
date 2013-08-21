@@ -1,7 +1,102 @@
 #include "Crypto.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-fpermissive"
+#include "GlobalPasswordDialog.h"
+
+#define CRYPTOPP_DEFAULT_NO_DLL
+#include <cryptopp/dll.h>
+#include <cryptopp/sha.h>
+#include <cryptopp/base64.h>
+#include <cryptopp/twofish.h>
+
+const unsigned int YAPS_KEY_SIZE = CryptoPP::SHA256::DIGESTSIZE;
+typedef byte Key[YAPS_KEY_SIZE];
+
+volatile int g_volatileInt = '0';
+
+static int volatileInt()
+{
+    if (++g_volatileInt > '9')
+        g_volatileInt = '0';
+    return g_volatileInt;
+}
+
+static void eraseKey(Key& key)
+{
+    memset((void*)&key[0], volatileInt(), YAPS_KEY_SIZE);
+}
+
+template<typename StringType>
+static void eraseString(StringType& s)
+{
+    for (int i = 0, imax = s.size(); i < imax; i++)
+        s[i] = volatileInt();
+}
+
+static void makeKeyFromPassword(const QString& password, Key& key)
+{
+    QByteArray passwordUtf8 = password.toUtf8();
+    CryptoPP::SHA256 hash;
+    hash.CalculateDigest(key, (const byte*)passwordUtf8.data(), passwordUtf8.size());
+}
+
+static void twofishEncrypt(const QString& input, QString& output, const Key& key)
+{
+    std::string inputStd = input.toStdString();
+    std::string outputStd;
+
+    byte iv[CryptoPP::Twofish::BLOCKSIZE];
+    memset(iv, 0x01, CryptoPP::Twofish::BLOCKSIZE);
+
+    CryptoPP::CFB_Mode<CryptoPP::Twofish>::Encryption cipher(key, YAPS_KEY_SIZE, iv);
+    CryptoPP::StringSource(inputStd, true,
+        new CryptoPP::StreamTransformationFilter(cipher,
+            new CryptoPP::Base64Encoder(
+                new CryptoPP::StringSink(outputStd)
+            ) // Base64Encoder
+        ) // StreamTransformationFilter
+    ); // StringSource
+
+    eraseString(output);
+    output = std::move(QString::fromStdString(outputStd).trimmed());
+    eraseString(inputStd);
+    eraseString(outputStd);
+}
+
+static void twofishDecrypt(const QString& input, QString& output, const Key& key)
+{
+    std::string inputStd = input.toStdString();
+    std::string outputStd;
+
+    byte iv[CryptoPP::Twofish::BLOCKSIZE];
+    memset(iv, 0x01, CryptoPP::Twofish::BLOCKSIZE);
+
+    CryptoPP::CFB_Mode<CryptoPP::Twofish>::Decryption cipher(key, YAPS_KEY_SIZE, iv);
+    CryptoPP::StringSource(inputStd, true,
+        new CryptoPP::Base64Decoder(
+            new CryptoPP::StreamTransformationFilter(cipher,
+                new CryptoPP::StringSink(outputStd)
+            ) // StreamTransformationFilter
+        ) // Base64Decoder
+    ); // StringSource
+
+    eraseString(output);
+    output = std::move(QString::fromStdString(outputStd));
+    eraseString(inputStd);
+    eraseString(outputStd);
+}
+
+//static void testTwofish(const QString& password, const QString& message)
+//{
+//    Key key, key2;
+//    makeKeyFromPassword(password, key);
+//    memcpy(key2, key, sizeof(key));
+//    QString encrypted, decrypted;
+//    twofishEncrypt(message, encrypted, key);
+//    twofishDecrypt(encrypted, decrypted, key2);
+//    qDebug() << message;
+//    qDebug() << encrypted;
+//    qDebug() << decrypted;
+//}
 
 Crypto& Crypto::instance()
 {
@@ -13,20 +108,28 @@ Crypto::Crypto()
 {
 }
 
-void Crypto::encrypt(QString& input, QString& output)
+void Crypto::encrypt(QString& text)
 {
-    output = input;
-    erase(input);
+    Key key;
+    makeKeyFromPassword(m_globalPassword, key);
+    twofishEncrypt(text, text, key);
+    eraseKey(key);
 }
 
 void Crypto::decrypt(const QString& input, QString& output)
 {
-    output = input;
+    Key key;
+    makeKeyFromPassword(m_globalPassword, key);
+    twofishDecrypt(input, output, key);
+    eraseKey(key);
 }
 
 void Crypto::erase(QString& stringToErase)
 {
-    stringToErase.fill('?');
+    eraseString(stringToErase);
 }
 
-#pragma GCC diagnostic pop
+bool Crypto::getGlobalPassword()
+{
+    return GlobalPasswordDialog(m_globalPassword).exec() == QDialog::Accepted;
+}

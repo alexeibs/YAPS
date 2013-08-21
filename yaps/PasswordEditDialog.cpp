@@ -7,19 +7,23 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include "PasswordsModel.h"
+#include "Crypto.h"
 
-PasswordEditDialog::PasswordEditDialog(QWidget* parent
-    , const QString& title
-    , PasswordRecord& record)
-    : QDialog(parent)
-    , m_record(record)
+PasswordEditDialog::PasswordEditDialog(const QString& title, PasswordRecord& record)
+    : m_record(record)
 {
     m_name = new QLineEdit;
     m_name->setText(m_record.name);
+
     m_password = new QLineEdit;
-    m_password->setText(m_record.password);
+    auto& crypto = Crypto::instance();
+    QString decrypted;
+    crypto.decrypt(record.password, decrypted);
+    m_password->setText(decrypted);
+    crypto.erase(decrypted);
     m_password->setEchoMode(QLineEdit::Password);
-    auto okButton = new QPushButton(tr("Ok"));
+
+    auto okButton = new QPushButton(tr("OK"));
     auto cancelButton = new QPushButton(tr("Cancel"));
     okButton->setDefault(true);
     connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
@@ -41,6 +45,7 @@ PasswordEditDialog::PasswordEditDialog(QWidget* parent
     setLayout(mainLayout);
     setFixedHeight(sizeHint().height());
     setWindowTitle(title);
+    setWindowFlags(Qt::WindowCloseButtonHint);
 }
 
 void PasswordEditDialog::setNameReadOnly(bool readOnly)
@@ -59,4 +64,8 @@ void PasswordEditDialog::commit()
 {
     m_record.name = m_name->text();
     m_record.password = m_password->text();
+    QString eraser;
+    eraser.fill('?', m_record.password.size());
+    m_password->setText(eraser);
+    Crypto::instance().encrypt(m_record.password);
 }

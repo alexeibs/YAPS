@@ -13,7 +13,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = yaps
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
         mainwindow.cpp \
     MainActions.cpp \
@@ -22,7 +21,8 @@ SOURCES += main.cpp\
     PasswordsModel.cpp \
     SecureClipboard.cpp \
     Crypto.cpp \
-    PasswordEditDialog.cpp
+    PasswordEditDialog.cpp \
+    GlobalPasswordDialog.cpp
 
 HEADERS  += mainwindow.h \
     MainActions.h \
@@ -31,11 +31,19 @@ HEADERS  += mainwindow.h \
     PasswordsModel.h \
     SecureClipboard.h \
     Crypto.h \
-    PasswordEditDialog.h
+    PasswordEditDialog.h \
+    GlobalPasswordDialog.h
 
 RESOURCES += \
     resources/main.qrc
 
 build_pass:CONFIG(debug, debug|release): {
-    DEFINES += DEBUG_VERSION
+    LIBS += -L../cryptopp562/debug
 }
+
+build_pass:CONFIG(release, debug|release): {
+    LIBS += -L../cryptopp562/release
+}
+
+INCLUDEPATH += ../
+LIBS += -lcryptopp562
