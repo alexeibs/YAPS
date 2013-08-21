@@ -25,10 +25,13 @@ PasswordEditDialog::PasswordEditDialog(const QString& title, PasswordRecord& rec
 
     auto okButton = new QPushButton(tr("OK"));
     auto cancelButton = new QPushButton(tr("Cancel"));
+    auto generateButton = new QPushButton(tr("Generate"));
     okButton->setDefault(true);
     connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
     connect(this, SIGNAL(accepted()), this, SLOT(commit()));
+    connect(generateButton, SIGNAL(clicked()), this, SLOT(generatePassword()));
+
     // layout
     auto formLayout = new QFormLayout;
     formLayout->setWidget(0, QFormLayout::LabelRole, new QLabel(tr("Name")));
@@ -37,11 +40,13 @@ PasswordEditDialog::PasswordEditDialog(const QString& title, PasswordRecord& rec
     formLayout->setWidget(1, QFormLayout::FieldRole, m_password);
     auto buttonLayout = new QHBoxLayout;
     buttonLayout->addStretch();
+    buttonLayout->addWidget(generateButton);
     buttonLayout->addWidget(okButton);
     buttonLayout->addWidget(cancelButton);
     auto mainLayout = new QVBoxLayout;
     mainLayout->addLayout(formLayout);
     mainLayout->addLayout(buttonLayout);
+
     setLayout(mainLayout);
     setFixedHeight(sizeHint().height());
     setWindowTitle(title);
@@ -68,4 +73,14 @@ void PasswordEditDialog::commit()
     eraser.fill('?', m_record.password.size());
     m_password->setText(eraser);
     Crypto::instance().encrypt(m_record.password);
+}
+
+void PasswordEditDialog::generatePassword()
+{
+    QString password;
+    auto& crypto = Crypto::instance();
+    crypto.generatePassword(password);
+    m_password->setText(password);
+    crypto.erase(password);
+    accept();
 }

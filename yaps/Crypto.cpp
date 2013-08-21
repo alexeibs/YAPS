@@ -98,6 +98,25 @@ static void twofishDecrypt(const QString& input, QString& output, const Key& key
 //    qDebug() << decrypted;
 //}
 
+static void generateRandomPassword(QString& password, int length)
+{
+    // Generate a random block
+    CryptoPP::AutoSeededRandomPool randomPool;
+    CryptoPP::SecByteBlock block(length * 3);
+    randomPool.GenerateBlock(block, block.size());
+
+    // make password using base64
+    std::string output;
+    CryptoPP::Base64Encoder base64(new CryptoPP::StringSink(output));
+    base64.Put(block, block.size());
+    base64.MessageEnd();
+
+    password = std::move(QString::fromStdString(output));
+    eraseString(output);
+    password.replace('+', '-');
+    password.replace('/', '_');
+}
+
 Crypto& Crypto::instance()
 {
     static Crypto single;
@@ -127,6 +146,14 @@ void Crypto::decrypt(const QString& input, QString& output)
 void Crypto::erase(QString& stringToErase)
 {
     eraseString(stringToErase);
+}
+
+void Crypto::generatePassword(QString& password, int length)
+{
+    if (length <= 0)
+        password.clear();
+    else
+        generateRandomPassword(password, length);
 }
 
 bool Crypto::getGlobalPassword()

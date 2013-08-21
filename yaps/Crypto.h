@@ -11,6 +11,7 @@ public:
     void encrypt(QString& text);
     void decrypt(const QString& input, QString& output);
     void erase(QString& stringToErase);
+    void generatePassword(QString& password, int length = 4); // length will be multiplied by 4
 
 private:
     Crypto();

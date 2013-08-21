@@ -16,6 +16,7 @@ public slots:
 
 private slots:
     void commit();
+    void generatePassword();
 
 private:
     PasswordRecord& m_record;
