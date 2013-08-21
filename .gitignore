@@ -1,2 +1,7 @@
 /build*/
 *.pro.user
+cryptopp562/Makefile*
+cryptopp562/debug/
+cryptopp562/object_script*
+cryptopp562/release/
+cryptopp/
