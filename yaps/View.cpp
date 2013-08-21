@@ -1,10 +1,9 @@
 #include "View.h"
-
 #include <QListView>
 
-QListView* makeView(QWidget* parent, QAbstractItemModel* model, int column)
+QListView* makeView(QAbstractItemModel* model, int column)
 {
-    QListView* view = new QListView(parent);
+    auto view = new QListView;
     view->setViewMode(QListView::ListMode);
     view->setModel(model);
     view->setModelColumn(column);

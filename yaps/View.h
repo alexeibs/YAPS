@@ -5,6 +5,6 @@ class QWidget;
 class QListView;
 class QAbstractItemModel;
 
-QListView* makeView(QWidget* parent, QAbstractItemModel*, int column);
+QListView* makeView(QAbstractItemModel*, int column);
 
 #endif // VIEW_H

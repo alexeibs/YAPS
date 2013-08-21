@@ -71,6 +71,7 @@ void MainWindow::setMainWidget(QWidget* widget)
 void MainWindow::createTrayIcon()
 {
     m_toggleAction = new QAction(tr("&Hide"), this);
+    m_toggleAction->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Q));
     auto quitAction = new QAction(tr("&Quit"), this);
     connect(m_toggleAction, SIGNAL(triggered()), this, SLOT(toggleWindow()));
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));

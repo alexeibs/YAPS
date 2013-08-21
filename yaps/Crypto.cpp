@@ -51,13 +51,13 @@ static void twofishEncrypt(const QString& input, QString& output, const Key& key
     CryptoPP::StringSource(inputStd, true,
         new CryptoPP::StreamTransformationFilter(cipher,
             new CryptoPP::Base64Encoder(
-                new CryptoPP::StringSink(outputStd)
+                new CryptoPP::StringSink(outputStd), false
             ) // Base64Encoder
         ) // StreamTransformationFilter
     ); // StringSource
 
     eraseString(output);
-    output = std::move(QString::fromStdString(outputStd).trimmed());
+    output = std::move(QString::fromStdString(outputStd));
     eraseString(inputStd);
     eraseString(outputStd);
 }
@@ -107,7 +107,7 @@ static void generateRandomPassword(QString& password, int length)
 
     // make password using base64
     std::string output;
-    CryptoPP::Base64Encoder base64(new CryptoPP::StringSink(output));
+    CryptoPP::Base64Encoder base64(new CryptoPP::StringSink(output), false);
     base64.Put(block, block.size());
     base64.MessageEnd();
 

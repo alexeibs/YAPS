@@ -46,21 +46,27 @@ void Actions::initialize()
         throw std::runtime_error("Main window does not exists");
 
     m_model = makeModel(this);
-    m_view = makeView(m_mainWindow, m_model, m_model->nameColumnIndex());
+    m_view = makeView(m_model, m_model->nameColumnIndex());
+    m_view->setCurrentIndex(m_model->index(0, 0));
+    connect(m_view, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(copyToClipboard()));
 
     // setup signals & slots
     QAction* action;
-    action = createAction(tr("Copy to Clipboard"), QIcon(":/icons/copy"));
+    action = createAction(tr("Copy to Clipboard (Ctrl+C)"), QIcon(":/icons/copy"));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
     connect(action, SIGNAL(triggered()), this, SLOT(copyToClipboard()));
     m_mainWindow->addActionIntoToolbar(nullptr);
 
-    action = createAction(tr("Add Password"), QIcon(":/icons/add"));
+    action = createAction(tr("Add Password (Ctrl+N)"), QIcon(":/icons/add"));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
     connect(action, SIGNAL(triggered()), this, SLOT(addPassword()));
 
-    action = createAction(tr("Edit Password"), QIcon(":/icons/edit"));
+    action = createAction(tr("Edit Password (F2)"), QIcon(":/icons/edit"));
+    action->setShortcut(QKeySequence(Qt::Key_F2));
     connect(action, SIGNAL(triggered()), this, SLOT(editPassword()));
 
-    action = createAction(tr("Remove Password"), QIcon(":/icons/delete"));
+    action = createAction(tr("Remove Password (Ctrl+Delete)"), QIcon(":/icons/delete"));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Delete));
     connect(action, SIGNAL(triggered()), this, SLOT(deletePassword()));
 }
 
@@ -80,6 +86,7 @@ void Actions::copyToClipboard()
         crypto.decrypt(record.password, decrypted);
         SecureClipboard::instance().setText(decrypted);
         crypto.erase(decrypted);
+        m_mainWindow->toggleWindow();
     }
 }
 
