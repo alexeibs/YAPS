@@ -37,6 +37,8 @@ HEADERS  += mainwindow.h \
 RESOURCES += \
     resources/main.qrc
 
+win32:RC_FILE += resources/win.rc
+
 build_pass:CONFIG(debug, debug|release): {
     LIBS += -L../cryptopp562/debug
 }
