@@ -6,6 +6,7 @@
 #include <QFormLayout>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QMessageBox>
 #include "PasswordsModel.h"
 #include "Crypto.h"
 
@@ -16,12 +17,9 @@ PasswordEditDialog::PasswordEditDialog(const QString& title, PasswordRecord& rec
     m_name->setText(m_record.name);
 
     m_password = new QLineEdit;
-    auto& crypto = Crypto::instance();
-    QString decrypted;
-    crypto.decrypt(record.password, decrypted);
-    m_password->setText(decrypted);
-    crypto.erase(decrypted);
     m_password->setEchoMode(QLineEdit::Password);
+    m_password2 = new QLineEdit;
+    m_password2->setEchoMode(QLineEdit::Password);
 
     auto okButton = new QPushButton(tr("OK"));
     auto cancelButton = new QPushButton(tr("Cancel"));
@@ -38,6 +36,8 @@ PasswordEditDialog::PasswordEditDialog(const QString& title, PasswordRecord& rec
     formLayout->setWidget(0, QFormLayout::FieldRole, m_name);
     formLayout->setWidget(1, QFormLayout::LabelRole, new QLabel(tr("Password")));
     formLayout->setWidget(1, QFormLayout::FieldRole, m_password);
+    formLayout->setWidget(2, QFormLayout::LabelRole, new QLabel(tr("Confirm")));
+    formLayout->setWidget(2, QFormLayout::FieldRole, m_password2);
     auto buttonLayout = new QHBoxLayout;
     buttonLayout->addStretch();
     buttonLayout->addWidget(generateButton);
@@ -60,8 +60,18 @@ void PasswordEditDialog::setNameReadOnly(bool readOnly)
 
 void PasswordEditDialog::accept()
 {
-    if (m_name->text().isEmpty() || m_password->text().isEmpty())
+    if (m_name->text().isEmpty()) {
+        QMessageBox::warning(this, tr("Error"), tr("Name should not be empty."));
         return;
+    }
+    if (m_password->text().isEmpty()) {
+        QMessageBox::warning(this, tr("Error"), tr("Password should not be empty."));
+        return;
+    }
+    if (m_password->text() != m_password2->text()) {
+        QMessageBox::warning(this, tr("Error"), tr("Passwords do not match."));
+        return;
+    }
     QDialog::accept();
 }
 
@@ -72,6 +82,7 @@ void PasswordEditDialog::commit()
     QString eraser;
     eraser.fill('?', m_record.password.size());
     m_password->setText(eraser);
+    m_password2->setText(eraser);
     Crypto::instance().encrypt(m_record.password);
 }
 
@@ -81,6 +92,7 @@ void PasswordEditDialog::generatePassword()
     auto& crypto = Crypto::instance();
     crypto.generatePassword(password);
     m_password->setText(password);
+    m_password2->setText(password);
     crypto.erase(password);
     accept();
 }

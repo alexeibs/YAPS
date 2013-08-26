@@ -22,6 +22,7 @@ private:
     PasswordRecord& m_record;
     QLineEdit* m_name;
     QLineEdit* m_password;
+    QLineEdit* m_password2;
 };
 
 #endif // PASSWORDEDITDIALOG_H
