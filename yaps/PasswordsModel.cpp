@@ -35,6 +35,47 @@ bool PasswordsModel::isValid(const QModelIndex& index) const
     return row >= 0 && row < rowCount() && column >= 0 && column < columnCount();
 }
 
+QModelIndex PasswordsModel::getIndexByName(const QString& name)
+{
+    // binary search, implementation based on
+    // http://en.cppreference.com/w/cpp/algorithm/lower_bound
+    QString current;
+    int first = 0, count = rowCount();
+    while (count > 0) {
+        int step = count / 2;
+        int row = first + step;
+        current = data(QSqlQueryModel::index(row, 0)).toString();
+        if (current >= name) {
+            count = step;
+        } else {
+            first = row + 1;
+            count -= step + 1;
+        }
+    }
+    current = data(QSqlQueryModel::index(first, 0)).toString();
+    int row = (current == name) ? first : 0;
+    return QSqlQueryModel::index(row, 0);
+}
+
+static inline int checkBounds(int n, int from, int to)
+{
+    if (n < from)
+        n = from;
+    else if (n >= to)
+        n = to - 1;
+    return n;
+}
+
+QModelIndex PasswordsModel::fixIndex(const QModelIndex& index)
+{
+    int newRow = 0, newColumn = 0;
+    if (index.isValid()) {
+        newRow = checkBounds(index.row(), 0, rowCount());
+        newColumn = checkBounds(index.column(), 0, columnCount());
+    }
+    return QSqlQueryModel::index(newRow, newColumn);
+}
+
 bool PasswordsModel::getRecord(const QModelIndex& index, PasswordRecord& record) const
 {
     if (!isValid(index))

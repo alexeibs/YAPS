@@ -102,15 +102,13 @@ void Actions::addPassword()
         if (userAnswer != QMessageBox::Yes)
             return;
     }
-    auto lastIndex = m_view->currentIndex();
     if (m_model->addOrSetRecord(record))
-        m_view->setCurrentIndex(lastIndex);
+        m_view->setCurrentIndex(m_model->getIndexByName(record.name));
 }
 
 void Actions::editPassword()
 {
-    auto lastIndex = m_view->currentIndex();
-    if (!m_model->isValid(lastIndex))
+    if (!m_model->isValid(m_view->currentIndex()))
         return;
     PasswordRecord record;
     if (m_model->getRecord(m_view->currentIndex(), record)) {
@@ -119,13 +117,13 @@ void Actions::editPassword()
         if (dialog.exec() == QDialog::Rejected)
             return;
         if (m_model->addOrSetRecord(record))
-            m_view->setCurrentIndex(lastIndex);
+            m_view->setCurrentIndex(m_model->getIndexByName(record.name));
     }
 }
 
 void Actions::deletePassword()
 {
-    auto lastIndex = m_view->currentIndex();
-    m_model->removeRecord(m_view->currentIndex());
-    m_view->setCurrentIndex(lastIndex);
+    auto currentIndex = m_view->currentIndex();
+    m_model->removeRecord(currentIndex);
+    m_view->setCurrentIndex(m_model->fixIndex(currentIndex));
 }
