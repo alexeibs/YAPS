@@ -50,7 +50,7 @@ PasswordEditDialog::PasswordEditDialog(const QString& title, PasswordRecord& rec
     setLayout(mainLayout);
     setFixedHeight(sizeHint().height());
     setWindowTitle(title);
-    setWindowFlags(Qt::WindowCloseButtonHint);
+    setWindowFlags(Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
 }
 
 void PasswordEditDialog::setNameReadOnly(bool readOnly)

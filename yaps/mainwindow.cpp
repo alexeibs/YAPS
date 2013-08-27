@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     setLayout(layout);
     setWindowTitle("YAPS");
-    setWindowFlags(Qt::Window);
+    setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
     setMinimumSize(QSize(150, 200));
     createTrayIcon();
 
@@ -101,7 +101,18 @@ void MainWindow::toggleWindow()
     if (isVisible()) {
         hide();
         m_toggleAction->setText(tr("&Show"));
+#ifdef Q_OS_WIN
+        if (m_lastForeground) {
+            if (IsIconic(m_lastForeground))
+                ::ShowWindow(m_lastForeground, SW_RESTORE);
+            ::SetForegroundWindow(m_lastForeground);
+        }
+#endif
     } else {
+#ifdef Q_OS_WIN
+        m_lastForeground = ::GetForegroundWindow();
+        ::SetForegroundWindow((HWND)winId());
+#endif
         showNormal();
         m_toggleAction->setText(tr("&Hide"));
     }

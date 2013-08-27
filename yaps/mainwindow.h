@@ -34,6 +34,9 @@ private:
     QMenu* m_trayMenu;
     QSystemTrayIcon* m_trayIcon;
     QToolBar* m_toolbar;
+#ifdef Q_OS_WIN
+    HWND m_lastForeground;
+#endif
 };
 
 #endif // MAINWINDOW_H

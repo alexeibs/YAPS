@@ -12,8 +12,8 @@
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,1,0,0
- PRODUCTVERSION 0,1,0,0
+ FILEVERSION 0,2,0,0
+ PRODUCTVERSION 0,2,0,0
  FILEFLAGSMASK 0x17L
  FILEFLAGS 0x0L
  FILEOS 0x4L
@@ -27,12 +27,12 @@ BEGIN
 			VALUE "Comments", ""
             VALUE "CompanyName", ""
 			VALUE "FileDescription", "Yet another password storage"
-            VALUE "FileVersion", "0.1.0.0"
+            VALUE "FileVersion", "0.2.0.0"
             VALUE "InternalName", "YAPS"
             VALUE "LegalCopyright", "(c) 2013 Alexei Bykov"
             VALUE "OriginalFilename", "yaps.exe"
             VALUE "ProductName", "YAPS"
-            VALUE "ProductVersion", "0.1.0.0"
+            VALUE "ProductVersion", "0.2.0.0"
         END
     END
     BLOCK "VarFileInfo"
