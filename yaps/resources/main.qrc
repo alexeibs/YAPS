@@ -9,4 +9,8 @@
     <qresource prefix="/misc">
         <file>init.sql</file>
     </qresource>
+    <qresource prefix="/tr">
+        <file>ru_RU.qm</file>
+        <file>qtbase_ru_RU.qm</file>
+    </qresource>
 </RCC>

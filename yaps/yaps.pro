@@ -49,3 +49,6 @@ build_pass:CONFIG(release, debug|release): {
 
 INCLUDEPATH += ../
 LIBS += -lcryptopp562
+
+TRANSLATIONS = resources/ru_RU.ts
+win32:TRANSLATIONS = resources\ru_RU.ts
