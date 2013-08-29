@@ -24,22 +24,22 @@
         <translation>Удалить пароль (Ctrl+Delete)</translation>
     </message>
     <message>
-        <location filename="../MainActions.cpp" line="96"/>
+        <location filename="../MainActions.cpp" line="101"/>
         <source>New password</source>
         <translation>Новый пароль</translation>
     </message>
     <message>
-        <location filename="../MainActions.cpp" line="100"/>
+        <location filename="../MainActions.cpp" line="105"/>
         <source>Confirm</source>
         <translation>Подтверждение</translation>
     </message>
     <message>
-        <location filename="../MainActions.cpp" line="101"/>
+        <location filename="../MainActions.cpp" line="106"/>
         <source>Password &quot;%1&quot; already exists. Overwrite it?</source>
         <translation>Пароль &quot;%1&quot; уже существует. Перезаписать его?</translation>
     </message>
     <message>
-        <location filename="../MainActions.cpp" line="115"/>
+        <location filename="../MainActions.cpp" line="120"/>
         <source>Edit password</source>
         <translation>Изменить пароль</translation>
     </message>
@@ -65,18 +65,18 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../mainwindow.cpp" line="73"/>
-        <location filename="../mainwindow.cpp" line="117"/>
+        <location filename="../mainwindow.cpp" line="75"/>
+        <location filename="../mainwindow.cpp" line="121"/>
         <source>&amp;Hide</source>
         <translation>&amp;Скрыть</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="75"/>
+        <location filename="../mainwindow.cpp" line="77"/>
         <source>&amp;Quit</source>
         <translation>&amp;Выход</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="103"/>
+        <location filename="../mainwindow.cpp" line="107"/>
         <source>&amp;Show</source>
         <translation>&amp;Показать</translation>
     </message>
@@ -84,54 +84,59 @@
 <context>
     <name>PasswordEditDialog</name>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="24"/>
+        <location filename="../PasswordEditDialog.cpp" line="32"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="25"/>
+        <location filename="../PasswordEditDialog.cpp" line="33"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="26"/>
+        <location filename="../PasswordEditDialog.cpp" line="34"/>
         <source>Generate</source>
         <translation>Сгенерировать</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="35"/>
+        <location filename="../PasswordEditDialog.cpp" line="43"/>
         <source>Name</source>
         <translation>Название</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="37"/>
+        <location filename="../PasswordEditDialog.cpp" line="45"/>
+        <source>Login</source>
+        <translation>Логин</translation>
+    </message>
+    <message>
+        <location filename="../PasswordEditDialog.cpp" line="47"/>
         <source>Password</source>
         <translation>Пароль</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="39"/>
+        <location filename="../PasswordEditDialog.cpp" line="49"/>
         <source>Confirm</source>
         <translation>Подтверждение</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="64"/>
-        <location filename="../PasswordEditDialog.cpp" line="68"/>
-        <location filename="../PasswordEditDialog.cpp" line="72"/>
+        <location filename="../PasswordEditDialog.cpp" line="74"/>
+        <location filename="../PasswordEditDialog.cpp" line="78"/>
+        <location filename="../PasswordEditDialog.cpp" line="82"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="64"/>
+        <location filename="../PasswordEditDialog.cpp" line="74"/>
         <source>Name should not be empty.</source>
         <translation>Имя не должно быть пустым.</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="68"/>
+        <location filename="../PasswordEditDialog.cpp" line="78"/>
         <source>Password should not be empty.</source>
         <translation>Пароль не должен быть пустым.</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="72"/>
+        <location filename="../PasswordEditDialog.cpp" line="82"/>
         <source>Passwords do not match.</source>
         <translation>Пароли не совпадают.</translation>
     </message>

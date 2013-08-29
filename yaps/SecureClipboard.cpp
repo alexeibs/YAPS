@@ -4,6 +4,8 @@
 #include <QApplication>
 #include <QClipboard>
 
+#include "Crypto.h"
+
 #define CLIPBOARD_TIMEOUT 5000
 
 SecureClipboard& SecureClipboard::instance()
@@ -15,9 +17,20 @@ SecureClipboard& SecureClipboard::instance()
 SecureClipboard::SecureClipboard()
     : m_needToClearClipboard(false)
 {
-    m_timer = new QTimer(this);
-    m_timer->setSingleShot(true);
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(clear()));
+    m_clearTimer = new QTimer(this);
+    m_clearTimer->setSingleShot(true);
+    m_nextTimer = new QTimer(this);
+    m_nextTimer->setSingleShot(true);
+    connect(m_clearTimer, SIGNAL(timeout()), this, SLOT(clear()));
+    connect(m_nextTimer, SIGNAL(timeout()), this, SLOT(nextItem()));
+}
+
+void SecureClipboard::setContent(const QString& content)
+{
+    m_clearTimer->stop();
+    m_nextTimer->stop();
+    m_content = content.split('\n');
+    nextItem();
 }
 
 void SecureClipboard::clear()
@@ -25,19 +38,29 @@ void SecureClipboard::clear()
     if (m_needToClearClipboard) {
         m_needToClearClipboard = false;
         QApplication::clipboard()->clear();
-        m_timer->stop();
+        m_clearTimer->stop();
+        auto& crypto = Crypto::instance();
+        for (auto it = m_content.begin(), itEnd = m_content.end(); it != itEnd; ++it)
+            crypto.erase(*it);
+        m_content.clear();
     }
 }
 
-void SecureClipboard::clearLater()
+void SecureClipboard::contentPasted()
 {
-    m_timer->start(50);
+    m_clearTimer->stop();
+    m_nextTimer->start(50);
 }
 
-void SecureClipboard::setText(const QString& text)
+void SecureClipboard::nextItem()
 {
-    m_timer->stop();
-    QApplication::clipboard()->setText(text);
-    m_needToClearClipboard = true;
-    m_timer->start(5000);
+    if (m_content.empty()) {
+        clear();
+    } else {
+        m_needToClearClipboard = true;
+        QApplication::clipboard()->setText(m_content.front());
+        Crypto::instance().erase(m_content.first());
+        m_content.removeFirst();
+        m_clearTimer->start(5000);
+    }
 }

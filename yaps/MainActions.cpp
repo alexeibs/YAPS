@@ -84,7 +84,7 @@ void Actions::copyToClipboard()
         auto& crypto = Crypto::instance();
         QString decrypted;
         crypto.decrypt(record.password, decrypted);
-        SecureClipboard::instance().setText(decrypted);
+        SecureClipboard::instance().setContent(decrypted);
         crypto.erase(decrypted);
         m_mainWindow->toggleWindow();
     }
@@ -92,7 +92,7 @@ void Actions::copyToClipboard()
 
 void Actions::clipboardPasted()
 {
-    SecureClipboard::instance().clearLater();
+    SecureClipboard::instance().contentPasted();
 }
 
 void Actions::addPassword()
