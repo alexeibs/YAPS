@@ -15,6 +15,7 @@
  // Ctrl + Shift + Q
 #define TOGGLE_WINDOW_HOTKEY_MOD (MOD_CONTROL | MOD_SHIFT)
 #define TOGGLE_WINDOW_HOTKEY_CODE (0x51)
+#include "kbhook/winkbhook.h"
 #endif
 
 #include "MainActions.h"
@@ -45,6 +46,7 @@ MainWindow::~MainWindow()
 {
     Actions::instance().setMainWindow(nullptr);
 #ifdef Q_OS_WIN
+    removeKeyBoardHook();
     // register global hotkey
     UnregisterHotKey((HWND)winId(), TOGGLE_WINDOW_HOTKEY);
 #endif
@@ -91,8 +93,10 @@ void MainWindow::createTrayIcon()
 
 #ifdef Q_OS_WIN
     // register global hotkey
-    RegisterHotKey((HWND)winId(), TOGGLE_WINDOW_HOTKEY
+    auto hwnd = (HWND)winId();
+    RegisterHotKey(hwnd, TOGGLE_WINDOW_HOTKEY
         , TOGGLE_WINDOW_HOTKEY_MOD, TOGGLE_WINDOW_HOTKEY_CODE);
+    setupKeyBoardHook(hwnd);
 #endif
 }
 
@@ -138,12 +142,13 @@ void MainWindow::closeEvent(QCloseEvent* event)
 bool MainWindow::nativeEvent(const QByteArray&, void *message, long *result)
 {
     auto msg = reinterpret_cast<MSG*>(message);
-    if (msg->message == WM_HOTKEY && msg->wParam == TOGGLE_WINDOW_HOTKEY)
-    {
+    if (msg->message == WM_HOTKEY && msg->wParam == TOGGLE_WINDOW_HOTKEY) {
         toggleWindow();
         *result = 0;
         return true;
     }
+    if (msg->message == WM_CLIPBOARD_PASTE)
+        Actions::instance().clipboardPasted();
     return false;
 }
 #endif

@@ -5,3 +5,6 @@ cryptopp562/debug/
 cryptopp562/object_script*
 cryptopp562/release/
 cryptopp/
+kbhook/Makefile*
+kbhook/debug/
+kbhook/release/

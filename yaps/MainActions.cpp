@@ -90,6 +90,11 @@ void Actions::copyToClipboard()
     }
 }
 
+void Actions::clipboardPasted()
+{
+    SecureClipboard::instance().clearLater();
+}
+
 void Actions::addPassword()
 {
     PasswordRecord record;

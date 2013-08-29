@@ -11,6 +11,7 @@ public:
 
 public slots:
     void clear();
+    void clearLater();
     void setText(const QString& text);
 
 private:
@@ -22,6 +23,7 @@ private:
 
 private:
     QTimer* m_timer;
+    bool m_needToClearClipboard;
 };
 
 #endif // SECURECLIPBOARD_H
