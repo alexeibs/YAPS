@@ -5,6 +5,8 @@ set KBHOOK_DIR=..\kbhook\release
 
 del /Q /F /S *.exe
 del /Q /F /S *.dll
+mkdir "%CD%\platforms"
+del /Q /F /S "%CD%\platforms\*.*"
 mkdir "%CD%\sqldrivers"
 del /Q /F /S "%CD%\sqldrivers\*.*"
 
@@ -18,6 +20,7 @@ xcopy /Y /R "%QT_DIR%\bin\Qt5Core.dll" "%CD%\"
 xcopy /Y /R "%QT_DIR%\bin\Qt5Gui.dll" "%CD%\"
 xcopy /Y /R "%QT_DIR%\bin\Qt5Widgets.dll" "%CD%\"
 xcopy /Y /R "%QT_DIR%\bin\Qt5Sql.dll" "%CD%\"
+xcopy /Y /R "%QT_DIR%\plugins\platforms\qwindows.dll" "%CD%\sqldrivers\"
 xcopy /Y /R "%QT_DIR%\plugins\sqldrivers\qsqlite.dll" "%CD%\sqldrivers\"
 xcopy /Y /R "%CRYPTO_DIR%\cryptopp562.dll" "%CD%\"
 xcopy /Y /R "%KBHOOK_DIR%\winkbhook.dll" "%CD%\"
