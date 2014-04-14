@@ -4,6 +4,9 @@
 #include <QAbstractItemView>
 #include <QFile>
 #include <QTranslator>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonObject>
 
 #include "mainwindow.h"
 #include "MainActions.h"
@@ -14,6 +17,8 @@
 
 static QSharedMemory* createSharedMemory();
 static void setupTranslations();
+static QJsonDocument loadConfig();
+static QString getDatabasePath(const QJsonDocument&);
 
 int main(int argc, char *argv[])
 {
@@ -25,10 +30,11 @@ int main(int argc, char *argv[])
     application.setWindowIcon(QIcon(":/icons/app"));
     setupTranslations();
 
-    if (!setupDatabase())
-        return 1;
+    QJsonDocument config = loadConfig();
     if (!Crypto::instance().getGlobalPassword())
         return 2;
+    if (!setupDatabase(getDatabasePath(config)))
+        return 1;
 
     MainWindow mainWindow; // MainWindow should be created before first call Actions::instance
 
@@ -65,4 +71,28 @@ void setupTranslations()
     QString locale = QLocale::system().name();
     loadTranslation(":/tr/" + QLocale::system().name() + ".qm");
     loadTranslation(":/tr/qtbase_" + QLocale::system().name() + ".qm");
+}
+
+static QJsonDocument loadConfig()
+{
+    QJsonDocument config;
+
+    QFile configFile("yaps.json");
+    if (configFile.open(QIODevice::ReadOnly))
+        config = QJsonDocument::fromJson(configFile.readAll());
+
+    return config;
+}
+
+static QString getDatabasePath(const QJsonDocument& config)
+{
+    QString path = "yaps.db";
+    if (!config.isObject())
+        return path;
+
+    auto root = config.object();
+    if (root.contains("database"))
+        path = root.value("database").toString(path);
+
+    return path;
 }

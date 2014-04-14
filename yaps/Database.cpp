@@ -18,7 +18,7 @@ PasswordsModel* makeModel(QObject* parent)
     return model;
 }
 
-bool setupDatabase()
+bool setupDatabase(const QString& databasePath)
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     if (!db.isValid()) {
@@ -26,7 +26,8 @@ bool setupDatabase()
             , QObject::tr("Unable to load database driver."));
         return false;
     }
-    db.setDatabaseName("yaps.db");
+
+    db.setDatabaseName(databasePath);
     if (!db.open()) {
         QMessageBox::critical(0, QObject::tr("Error")
             , QObject::tr("Unable to open database."));
