@@ -1,5 +1,6 @@
 #include "Crypto.h"
 
+#include <QTimer>
 #include "GlobalPasswordDialog.h"
 
 #define CRYPTOPP_DEFAULT_NO_DLL
@@ -30,6 +31,7 @@ static void eraseString(StringType& s)
 {
     for (int i = 0, imax = s.size(); i < imax; i++)
         s[i] = volatileInt();
+    s.clear();
 }
 
 static void makeKeyFromPassword(const QString& password, Key& key)
@@ -117,14 +119,21 @@ static void generateRandomPassword(QString& password, int length)
     password.replace('/', '_');
 }
 
-Crypto& Crypto::instance()
+Crypto::CryptoPointer Crypto::instance()
 {
     static Crypto single;
-    return single;
+
+    if (!single.refreshPassword())
+        return CryptoPointer(nullptr, Crypto::unlockCrypto);
+
+    return CryptoPointer(&single, Crypto::unlockCrypto);
 }
 
 Crypto::Crypto()
 {
+    m_clearTimer = new QTimer(this);
+    m_clearTimer->setSingleShot(true);
+    connect(m_clearTimer, SIGNAL(timeout()), this, SLOT(clear()));
 }
 
 void Crypto::encrypt(QString& text)
@@ -156,7 +165,40 @@ void Crypto::generatePassword(QString& password, int length)
         generateRandomPassword(password, length);
 }
 
-bool Crypto::getGlobalPassword()
+bool Crypto::refreshPassword()
 {
-    return GlobalPasswordDialog(m_globalPassword).exec() == QDialog::Accepted;
+    if (m_globalPassword.isEmpty()) {
+        GlobalPasswordDialog(m_globalPassword).exec();
+        if (m_globalPassword.isEmpty())
+            return false;
+    }
+
+    m_clearTimer->start(300000);
+    return true;
+}
+
+void Crypto::lock()
+{
+    m_locked = true;
+}
+
+void Crypto::unlock()
+{
+    m_locked = false;
+}
+
+void Crypto::unlockCrypto(Crypto* crypto)
+{
+    if (crypto)
+        crypto->unlock();
+}
+
+void Crypto::clear()
+{
+    if (m_locked) {
+        m_clearTimer->start(100);
+    } else {
+        m_clearTimer->stop();
+        eraseString(m_globalPassword);
+    }
 }

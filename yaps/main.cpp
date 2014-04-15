@@ -30,9 +30,9 @@ int main(int argc, char *argv[])
     application.setWindowIcon(QIcon(":/icons/app"));
     setupTranslations();
 
-    QJsonDocument config = loadConfig();
-    if (!Crypto::instance().getGlobalPassword())
+    if (!Crypto::instance())
         return 2;
+    QJsonDocument config = loadConfig();
     if (!setupDatabase(getDatabasePath(config)))
         return 1;
 

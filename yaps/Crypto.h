@@ -1,17 +1,28 @@
 #ifndef CRYPTO_H
 #define CRYPTO_H
 
+#include <memory>
 #include <QObject>
+
+class QTimer;
 
 class Crypto : public QObject { Q_OBJECT
 public:
-    static Crypto& instance();
+    typedef std::unique_ptr<Crypto, void(*)(Crypto*)> CryptoPointer;
 
-    bool getGlobalPassword();
+    static CryptoPointer instance();
+    static void erase(QString& stringToErase);
+
     void encrypt(QString& text);
     void decrypt(const QString& input, QString& output);
-    void erase(QString& stringToErase);
     void generatePassword(QString& password, int length = 4); // length will be multiplied by 4
+
+    void lock();
+    void unlock();
+    static void unlockCrypto(Crypto* object);
+
+public slots:
+    void clear();
 
 private:
     Crypto();
@@ -20,8 +31,12 @@ private:
     void operator=(const Crypto&) = delete;
     void operator=(Crypto&&) = delete;
 
+    bool refreshPassword();
+
 private:
     QString m_globalPassword;
+    QTimer* m_clearTimer = nullptr;
+    bool m_locked = false;
 };
 
 #endif // CRYPTO_H

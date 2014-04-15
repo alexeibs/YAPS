@@ -6,7 +6,7 @@
 struct PasswordRecord {
     QString name;
     QString password;
-    unsigned int timestamp;
+    unsigned int timestamp = 0;
 };
 
 class PasswordsModel : public QSqlQueryModel { Q_OBJECT

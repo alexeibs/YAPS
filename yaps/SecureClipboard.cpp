@@ -39,9 +39,8 @@ void SecureClipboard::clear()
         m_needToClearClipboard = false;
         QApplication::clipboard()->clear();
         m_clearTimer->stop();
-        auto& crypto = Crypto::instance();
         for (auto it = m_content.begin(), itEnd = m_content.end(); it != itEnd; ++it)
-            crypto.erase(*it);
+            Crypto::erase(*it);
         m_content.clear();
     }
 }
@@ -59,7 +58,7 @@ void SecureClipboard::nextItem()
     } else {
         m_needToClearClipboard = true;
         QApplication::clipboard()->setText(m_content.front());
-        Crypto::instance().erase(m_content.first());
+        Crypto::erase(m_content.first());
         m_content.removeFirst();
         m_clearTimer->start(5000);
     }

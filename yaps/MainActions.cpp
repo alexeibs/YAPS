@@ -81,11 +81,13 @@ void Actions::copyToClipboard()
 {
     PasswordRecord record;
     if (m_model->getRecord(m_view->currentIndex(), record)) {
-        auto& crypto = Crypto::instance();
+        auto crypto = Crypto::instance();
+        if (!crypto)
+            return;
         QString decrypted;
-        crypto.decrypt(record.password, decrypted);
+        crypto->decrypt(record.password, decrypted);
         SecureClipboard::instance().setContent(decrypted);
-        crypto.erase(decrypted);
+        Crypto::erase(decrypted);
         m_mainWindow->toggleWindow();
     }
 }
@@ -98,9 +100,12 @@ void Actions::clipboardPasted()
 void Actions::addPassword()
 {
     PasswordRecord record;
-    PasswordEditDialog dialog(tr("New password"), record);
+    PasswordEditDialog dialog(tr("New password"));
+    if (!dialog.setPasswordRecord(record)) // Crypto API is inaccessible
+        return;
     if (dialog.exec() == QDialog::Rejected)
         return;
+    record = dialog.passwordRecord();
     if (m_model->hasRecord(record.name)) {
         auto userAnswer = QMessageBox::question(m_mainWindow, tr("Confirm")
             , tr("Password \"%1\" already exists. Overwrite it?").arg(record.name));
@@ -117,10 +122,13 @@ void Actions::editPassword()
         return;
     PasswordRecord record;
     if (m_model->getRecord(m_view->currentIndex(), record)) {
-        PasswordEditDialog dialog(tr("Edit password"), record);
+        PasswordEditDialog dialog(tr("Edit password"));
+        if (!dialog.setPasswordRecord(record))
+            return;
         dialog.setNameReadOnly(true);
         if (dialog.exec() == QDialog::Rejected)
             return;
+        record = dialog.passwordRecord();
         if (m_model->addOrSetRecord(record))
             m_view->setCurrentIndex(m_model->getIndexByName(record.name));
     }

@@ -10,24 +10,14 @@
 #include "PasswordsModel.h"
 #include "Crypto.h"
 
-PasswordEditDialog::PasswordEditDialog(const QString& title, PasswordRecord& record)
-    : m_record(record)
+PasswordEditDialog::PasswordEditDialog(const QString& title)
 {
     m_name = new QLineEdit;
-    m_name->setText(m_record.name);
     m_login = new QLineEdit;
     m_password = new QLineEdit;
     m_password->setEchoMode(QLineEdit::Password);
     m_password2 = new QLineEdit;
     m_password2->setEchoMode(QLineEdit::Password);
-
-    auto& crypto = Crypto::instance();
-    QString decrypted;
-    crypto.decrypt(record.password, decrypted);
-    int loginLength = decrypted.indexOf('\n');
-    if (loginLength > 0)
-        m_login->setText(decrypted.left(loginLength));
-    crypto.erase(decrypted);
 
     auto okButton = new QPushButton(tr("OK"));
     auto cancelButton = new QPushButton(tr("Cancel"));
@@ -35,7 +25,6 @@ PasswordEditDialog::PasswordEditDialog(const QString& title, PasswordRecord& rec
     okButton->setDefault(true);
     connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(this, SIGNAL(accepted()), this, SLOT(commit()));
     connect(generateButton, SIGNAL(clicked()), this, SLOT(generatePassword()));
 
     // layout
@@ -60,7 +49,26 @@ PasswordEditDialog::PasswordEditDialog(const QString& title, PasswordRecord& rec
     setLayout(mainLayout);
     setFixedHeight(sizeHint().height());
     setWindowTitle(title);
-    setWindowFlags(Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
+    setWindowFlags(Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
+}
+
+bool PasswordEditDialog::setPasswordRecord(const PasswordRecord& record)
+{
+    auto crypto = Crypto::instance();
+    if (!crypto)
+        return false;
+
+    m_record = record;
+    m_name->setText(m_record.name);
+
+    QString decrypted;
+    crypto->decrypt(record.password, decrypted);
+    int loginLength = decrypted.indexOf('\n');
+    if (loginLength > 0)
+        m_login->setText(decrypted.left(loginLength));
+    Crypto::erase(decrypted);
+
+    return true;
 }
 
 void PasswordEditDialog::setNameReadOnly(bool readOnly)
@@ -70,6 +78,7 @@ void PasswordEditDialog::setNameReadOnly(bool readOnly)
 
 void PasswordEditDialog::accept()
 {
+    // validate user input
     if (m_name->text().isEmpty()) {
         QMessageBox::warning(this, tr("Error"), tr("Name should not be empty."));
         return;
@@ -82,32 +91,52 @@ void PasswordEditDialog::accept()
         QMessageBox::warning(this, tr("Error"), tr("Passwords do not match."));
         return;
     }
-    QDialog::accept();
+
+    // encrypt data and close the dialog
+    if (commit())
+        QDialog::accept();
+    else
+        QDialog::reject();
 }
 
-void PasswordEditDialog::commit()
+bool PasswordEditDialog::commit()
 {
+    auto crypto = Crypto::instance();
+    if (!crypto)
+        return false;
+
+    // fill in PasswordRecord
     m_record.name = m_name->text();
     if (m_login->text().isEmpty())
         m_record.password = m_password->text();
     else
         m_record.password = m_login->text() + "\n" + m_password->text();
+
+    // erase data in GUI controls
     QString eraser;
     eraser.fill('?', m_login->text().size());
     m_login->setText(eraser);
     eraser.fill('?', m_password->text().size());
     m_password->setText(eraser);
     m_password2->setText(eraser);
-    Crypto::instance().encrypt(m_record.password);
+
+    // encrypt PasswordRecord
+    crypto->encrypt(m_record.password);
+
+    return true;
 }
 
 void PasswordEditDialog::generatePassword()
 {
+    auto crypto = Crypto::instance();
+    if (!crypto)
+        return;
+
     QString password;
-    auto& crypto = Crypto::instance();
-    crypto.generatePassword(password);
+    crypto->generatePassword(password);
     m_password->setText(password);
     m_password2->setText(password);
-    crypto.erase(password);
+    Crypto::erase(password);
+
     accept();
 }

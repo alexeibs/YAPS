@@ -28,7 +28,7 @@ GlobalPasswordDialog::GlobalPasswordDialog(QString& password)
 
     setLayout(mainLayout);
     setWindowTitle(tr("Enter password"));
-    setWindowFlags(Qt::WindowCloseButtonHint);
+    setWindowFlags(Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
     setFixedSize(sizeHint());
 }
 
