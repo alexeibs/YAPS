@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="ru_RU">
+<TS version="2.1" language="ru_RU">
 <context>
     <name>Actions</name>
     <message>
@@ -9,37 +9,42 @@
         <translation>Скопировать в буфер обмена (Ctrl+C)</translation>
     </message>
     <message>
-        <location filename="../MainActions.cpp" line="60"/>
+        <location filename="../MainActions.cpp" line="59"/>
+        <source>Copy password only (Ctrl+Shift+C)</source>
+        <translation>Скопировать только пароль (Ctrl+Shift+C)</translation>
+    </message>
+    <message>
+        <location filename="../MainActions.cpp" line="65"/>
         <source>Add Password (Ctrl+N)</source>
         <translation>Добавить пароль (Ctrl+N)</translation>
     </message>
     <message>
-        <location filename="../MainActions.cpp" line="64"/>
+        <location filename="../MainActions.cpp" line="69"/>
         <source>Edit Password (F2)</source>
         <translation>Изменить пароль (F2)</translation>
     </message>
     <message>
-        <location filename="../MainActions.cpp" line="68"/>
+        <location filename="../MainActions.cpp" line="73"/>
         <source>Remove Password (Ctrl+Delete)</source>
         <translation>Удалить пароль (Ctrl+Delete)</translation>
     </message>
     <message>
-        <location filename="../MainActions.cpp" line="101"/>
+        <location filename="../MainActions.cpp" line="125"/>
         <source>New password</source>
         <translation>Новый пароль</translation>
     </message>
     <message>
-        <location filename="../MainActions.cpp" line="105"/>
+        <location filename="../MainActions.cpp" line="132"/>
         <source>Confirm</source>
         <translation>Подтверждение</translation>
     </message>
     <message>
-        <location filename="../MainActions.cpp" line="106"/>
+        <location filename="../MainActions.cpp" line="133"/>
         <source>Password &quot;%1&quot; already exists. Overwrite it?</source>
         <translation>Пароль &quot;%1&quot; уже существует. Перезаписать его?</translation>
     </message>
     <message>
-        <location filename="../MainActions.cpp" line="120"/>
+        <location filename="../MainActions.cpp" line="147"/>
         <source>Edit password</source>
         <translation>Изменить пароль</translation>
     </message>
@@ -84,59 +89,59 @@
 <context>
     <name>PasswordEditDialog</name>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="32"/>
+        <location filename="../PasswordEditDialog.cpp" line="22"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="33"/>
+        <location filename="../PasswordEditDialog.cpp" line="23"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="34"/>
+        <location filename="../PasswordEditDialog.cpp" line="24"/>
         <source>Generate</source>
         <translation>Сгенерировать</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="43"/>
+        <location filename="../PasswordEditDialog.cpp" line="32"/>
         <source>Name</source>
         <translation>Название</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="45"/>
+        <location filename="../PasswordEditDialog.cpp" line="34"/>
         <source>Login</source>
         <translation>Логин</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="47"/>
+        <location filename="../PasswordEditDialog.cpp" line="36"/>
         <source>Password</source>
         <translation>Пароль</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="49"/>
+        <location filename="../PasswordEditDialog.cpp" line="38"/>
         <source>Confirm</source>
         <translation>Подтверждение</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="74"/>
-        <location filename="../PasswordEditDialog.cpp" line="78"/>
-        <location filename="../PasswordEditDialog.cpp" line="82"/>
+        <location filename="../PasswordEditDialog.cpp" line="83"/>
+        <location filename="../PasswordEditDialog.cpp" line="87"/>
+        <location filename="../PasswordEditDialog.cpp" line="91"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="74"/>
+        <location filename="../PasswordEditDialog.cpp" line="83"/>
         <source>Name should not be empty.</source>
         <translation>Имя не должно быть пустым.</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="78"/>
+        <location filename="../PasswordEditDialog.cpp" line="87"/>
         <source>Password should not be empty.</source>
         <translation>Пароль не должен быть пустым.</translation>
     </message>
     <message>
-        <location filename="../PasswordEditDialog.cpp" line="82"/>
+        <location filename="../PasswordEditDialog.cpp" line="91"/>
         <source>Passwords do not match.</source>
         <translation>Пароли не совпадают.</translation>
     </message>
@@ -154,7 +159,7 @@
     <name>QObject</name>
     <message>
         <location filename="../Database.cpp" line="25"/>
-        <location filename="../Database.cpp" line="31"/>
+        <location filename="../Database.cpp" line="32"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -164,12 +169,12 @@
         <translation>Не удается загрузить драйвер базы данных.</translation>
     </message>
     <message>
-        <location filename="../Database.cpp" line="32"/>
+        <location filename="../Database.cpp" line="33"/>
         <source>Unable to open database.</source>
         <translation>Не удается открыть базу данных.</translation>
     </message>
     <message>
-        <location filename="../Database.cpp" line="54"/>
+        <location filename="../Database.cpp" line="55"/>
         <source>Recovering database</source>
         <translation>Восстановление базы данных</translation>
     </message>

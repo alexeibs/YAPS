@@ -24,6 +24,7 @@ public:
 
 public slots:
     void copyToClipboard();
+    void copyPasswordToClipboard();
     void clipboardPasted();
     void addPassword();
     void editPassword();

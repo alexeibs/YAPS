@@ -55,6 +55,11 @@ void Actions::initialize()
     action = createAction(tr("Copy to Clipboard (Ctrl+C)"), QIcon(":/icons/copy"));
     action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
     connect(action, SIGNAL(triggered()), this, SLOT(copyToClipboard()));
+
+    action = createAction(tr("Copy password only (Ctrl+Shift+C)"), QIcon(":/icons/copy_pwd"));
+    action->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
+    connect(action, SIGNAL(triggered()), this, SLOT(copyPasswordToClipboard()));
+
     m_mainWindow->addActionIntoToolbar(nullptr);
 
     action = createAction(tr("Add Password (Ctrl+N)"), QIcon(":/icons/add"));
@@ -88,6 +93,23 @@ void Actions::copyToClipboard()
         crypto->decrypt(record.password, decrypted);
         SecureClipboard::instance().setContent(decrypted);
         Crypto::erase(decrypted);
+        m_mainWindow->toggleWindow();
+    }
+}
+
+void Actions::copyPasswordToClipboard()
+{
+    PasswordRecord record;
+    if (m_model->getRecord(m_view->currentIndex(), record)) {
+        auto crypto = Crypto::instance();
+        if (!crypto)
+            return;
+        QString decrypted;
+        crypto->decrypt(record.password, decrypted);
+        QString password = decrypted.mid(decrypted.lastIndexOf('\n') + 1);
+        SecureClipboard::instance().setContent(password);
+        Crypto::erase(decrypted);
+        Crypto::erase(password);
         m_mainWindow->toggleWindow();
     }
 }
