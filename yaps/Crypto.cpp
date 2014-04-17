@@ -119,9 +119,15 @@ static void generateRandomPassword(QString& password, int length)
     password.replace('/', '_');
 }
 
-Crypto::CryptoPointer Crypto::instance()
+Crypto& Crypto::privateInstance()
 {
     static Crypto single;
+    return single;
+}
+
+Crypto::CryptoPointer Crypto::instance()
+{
+    auto& single = privateInstance();
 
     if (!single.refreshPassword())
         return CryptoPointer(nullptr, Crypto::unlockCrypto);
@@ -174,6 +180,7 @@ bool Crypto::refreshPassword()
     }
 
     m_clearTimer->start(300000);
+    emit globalPasswordRefreshed();
     return true;
 }
 
@@ -197,8 +204,14 @@ void Crypto::clear()
 {
     if (m_locked) {
         m_clearTimer->start(100);
-    } else {
+    } else if (!m_globalPassword.isEmpty()) {
         m_clearTimer->stop();
         eraseString(m_globalPassword);
+        emit globalPasswordExpired();
     }
+}
+
+void Crypto::clearGlobalPassword()
+{
+    privateInstance().clear();
 }

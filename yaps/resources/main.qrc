@@ -6,6 +6,7 @@
         <file alias="edit">edit_24x24.png</file>
         <file alias="copy">copy_24x24.png</file>
         <file alias="copy_pwd">copy_pwd_24x24.png</file>
+        <file alias="forget_pwd">forget_pwd_24x24.png</file>
     </qresource>
     <qresource prefix="/misc">
         <file>init.sql</file>

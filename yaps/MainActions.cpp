@@ -73,6 +73,18 @@ void Actions::initialize()
     action = createAction(tr("Remove Password (Ctrl+Delete)"), QIcon(":/icons/delete"));
     action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Delete));
     connect(action, SIGNAL(triggered()), this, SLOT(deletePassword()));
+
+    m_mainWindow->addActionIntoToolbar(nullptr);
+
+    m_expireAction = createAction(tr("Reset master password (F2)"), QIcon(":/icons/forget_pwd"));
+    action->setShortcut(QKeySequence(Qt::Key_F12));
+    connect(m_expireAction, SIGNAL(triggered()), this, SLOT(clearGlobalPassword()));
+
+    auto crypto = Crypto::instance();
+    if (crypto) {
+        connect(crypto.get(), SIGNAL(globalPasswordRefreshed()), this, SLOT(globalPasswordRefreshed()));
+        connect(crypto.get(), SIGNAL(globalPasswordExpired()), this, SLOT(globalPasswordExpired()));
+    }
 }
 
 QAction* Actions::createAction(const QString& name, const QIcon& icon)
@@ -161,4 +173,19 @@ void Actions::deletePassword()
     auto currentIndex = m_view->currentIndex();
     m_model->removeRecord(currentIndex);
     m_view->setCurrentIndex(m_model->fixIndex(currentIndex));
+}
+
+void Actions::clearGlobalPassword()
+{
+    Crypto::clearGlobalPassword();
+}
+
+void Actions::globalPasswordRefreshed()
+{
+    m_expireAction->setEnabled(true);
+}
+
+void Actions::globalPasswordExpired()
+{
+    m_expireAction->setEnabled(false);
 }

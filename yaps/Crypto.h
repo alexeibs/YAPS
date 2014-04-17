@@ -12,6 +12,7 @@ public:
 
     static CryptoPointer instance();
     static void erase(QString& stringToErase);
+    static void clearGlobalPassword();
 
     void encrypt(QString& text);
     void decrypt(const QString& input, QString& output);
@@ -20,6 +21,10 @@ public:
     void lock();
     void unlock();
     static void unlockCrypto(Crypto* object);
+
+signals:
+    void globalPasswordRefreshed();
+    void globalPasswordExpired();
 
 public slots:
     void clear();
@@ -30,6 +35,7 @@ private:
     Crypto(Crypto&&) = delete;
     void operator=(const Crypto&) = delete;
     void operator=(Crypto&&) = delete;
+    static Crypto& privateInstance();
 
     bool refreshPassword();
 

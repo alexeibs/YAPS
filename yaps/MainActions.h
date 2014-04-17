@@ -26,9 +26,14 @@ public slots:
     void copyToClipboard();
     void copyPasswordToClipboard();
     void clipboardPasted();
+
     void addPassword();
     void editPassword();
     void deletePassword();
+
+    void clearGlobalPassword();
+    void globalPasswordRefreshed();
+    void globalPasswordExpired();
 
 private:
     Actions();
@@ -43,6 +48,7 @@ private:
     MainWindow* m_mainWindow;
     PasswordsModel* m_model;
     QListView* m_view;
+    QAction* m_expireAction;
 };
 
 #endif // MAINACTIONS_H

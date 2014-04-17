@@ -29,22 +29,27 @@
         <translation>Удалить пароль (Ctrl+Delete)</translation>
     </message>
     <message>
-        <location filename="../MainActions.cpp" line="125"/>
+        <location filename="../MainActions.cpp" line="79"/>
+        <source>Reset master password (F2)</source>
+        <translation>Сбросить мастер-пароль (F2)</translation>
+    </message>
+    <message>
+        <location filename="../MainActions.cpp" line="137"/>
         <source>New password</source>
         <translation>Новый пароль</translation>
     </message>
     <message>
-        <location filename="../MainActions.cpp" line="132"/>
+        <location filename="../MainActions.cpp" line="144"/>
         <source>Confirm</source>
         <translation>Подтверждение</translation>
     </message>
     <message>
-        <location filename="../MainActions.cpp" line="133"/>
+        <location filename="../MainActions.cpp" line="145"/>
         <source>Password &quot;%1&quot; already exists. Overwrite it?</source>
         <translation>Пароль &quot;%1&quot; уже существует. Перезаписать его?</translation>
     </message>
     <message>
-        <location filename="../MainActions.cpp" line="147"/>
+        <location filename="../MainActions.cpp" line="159"/>
         <source>Edit password</source>
         <translation>Изменить пароль</translation>
     </message>
