@@ -30,8 +30,8 @@
     </message>
     <message>
         <location filename="../MainActions.cpp" line="79"/>
-        <source>Reset master password (F2)</source>
-        <translation>Сбросить мастер-пароль (F2)</translation>
+        <source>Reset master password (F12)</source>
+        <translation>Сбросить мастер-пароль (F12)</translation>
     </message>
     <message>
         <location filename="../MainActions.cpp" line="137"/>

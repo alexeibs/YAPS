@@ -76,7 +76,7 @@ void Actions::initialize()
 
     m_mainWindow->addActionIntoToolbar(nullptr);
 
-    m_expireAction = createAction(tr("Reset master password (F2)"), QIcon(":/icons/forget_pwd"));
+    m_expireAction = createAction(tr("Reset master password (F12)"), QIcon(":/icons/forget_pwd"));
     action->setShortcut(QKeySequence(Qt::Key_F12));
     connect(m_expireAction, SIGNAL(triggered()), this, SLOT(clearGlobalPassword()));
 
