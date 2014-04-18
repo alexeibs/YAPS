@@ -10,6 +10,7 @@
 #include <cryptopp/twofish.h>
 
 const unsigned int YAPS_KEY_SIZE = CryptoPP::SHA256::DIGESTSIZE;
+const unsigned int YAPS_NOISE_SIZE = 4096;
 typedef byte Key[YAPS_KEY_SIZE];
 
 volatile int g_volatileInt = '0';
@@ -41,9 +42,61 @@ static void makeKeyFromPassword(const QString& password, Key& key)
     hash.CalculateDigest(key, (const byte*)passwordUtf8.data(), passwordUtf8.size());
 }
 
+static void surroundWithNoise(std::string& s, size_t outputSize)
+{
+    if (s.size() + 1 >= outputSize)
+        return;
+    size_t freeSpace = outputSize - s.size();
+
+    // generate random noise
+    std::string buffer(outputSize, '\0');
+    CryptoPP::AutoSeededRandomPool randomPool;
+    randomPool.GenerateBlock((byte*)&buffer[0], outputSize);
+    // replace all zero bytes
+    for (size_t i = 0; i < outputSize; ++i) {
+        while (buffer[i] == '\0')
+            buffer[i] = (char)randomPool.GenerateByte();
+    }
+
+    // find random position for string 's'
+    size_t randomNumber;
+    randomPool.GenerateBlock((byte*)&randomNumber, sizeof(randomNumber));
+    size_t right = randomNumber % (freeSpace - 1) + 1;
+    size_t left = freeSpace - right;
+
+    // copy s into buffer and put zero delimiters
+    memcpy(&buffer[left], &s[0], s.size());
+    buffer[outputSize - right] = '\0';
+    if (left > 0)
+        buffer[left - 1] = '\0';
+
+    // replace s by buffer and erase original string
+    buffer.swap(s);
+    eraseString(buffer);
+}
+
+static void cleanStringFromNoise(std::string& s)
+{
+    size_t right = s.find_last_of('\0');
+    if (right == std::string::npos || right == 0)
+        return;
+
+    size_t left = s.find_last_of('\0', right - 1);
+    if (left == std::string::npos)
+        left = 0;
+
+    if (right == left + 1)
+        return;
+
+    std::string buffer = s.substr(left + 1, right - left - 1);
+    buffer.swap(s);
+    eraseString(buffer);
+}
+
 static void twofishEncrypt(const QString& input, QString& output, const Key& key)
 {
     std::string inputStd = input.toStdString();
+    surroundWithNoise(inputStd, YAPS_NOISE_SIZE);
     std::string outputStd;
 
     byte iv[CryptoPP::Twofish::BLOCKSIZE];
@@ -81,6 +134,7 @@ static void twofishDecrypt(const QString& input, QString& output, const Key& key
         ) // Base64Decoder
     ); // StringSource
 
+    cleanStringFromNoise(outputStd);
     eraseString(output);
     output = std::move(QString::fromStdString(outputStd));
     eraseString(inputStd);
