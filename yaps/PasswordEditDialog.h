@@ -21,6 +21,7 @@ public slots:
 
 private slots:
     void generatePassword();
+    void copyAll();
 
 private:
     bool commit();

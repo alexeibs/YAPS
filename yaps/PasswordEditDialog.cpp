@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include "PasswordsModel.h"
 #include "Crypto.h"
+#include "SecureClipboard.h"
 
 PasswordEditDialog::PasswordEditDialog(const QString& title)
 {
@@ -22,10 +23,12 @@ PasswordEditDialog::PasswordEditDialog(const QString& title)
     auto okButton = new QPushButton(tr("OK"));
     auto cancelButton = new QPushButton(tr("Cancel"));
     auto generateButton = new QPushButton(tr("Generate"));
+    auto copyButton = new QPushButton(tr("Copy all"));
     okButton->setDefault(true);
     connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
     connect(generateButton, SIGNAL(clicked()), this, SLOT(generatePassword()));
+    connect(copyButton, SIGNAL(clicked()), this, SLOT(copyAll()));
 
     // layout
     auto formLayout = new QFormLayout;
@@ -40,6 +43,7 @@ PasswordEditDialog::PasswordEditDialog(const QString& title)
     auto buttonLayout = new QHBoxLayout;
     buttonLayout->addStretch();
     buttonLayout->addWidget(generateButton);
+    buttonLayout->addWidget(copyButton);
     buttonLayout->addWidget(okButton);
     buttonLayout->addWidget(cancelButton);
     auto mainLayout = new QVBoxLayout;
@@ -137,6 +141,19 @@ void PasswordEditDialog::generatePassword()
     m_password->setText(password);
     m_password2->setText(password);
     Crypto::erase(password);
+}
 
-    accept();
+void PasswordEditDialog::copyAll()
+{
+    QString login = m_login->text();
+    QString password1 = m_password->text();
+    QString password2 = m_password2->text();
+    QString all = login + "\n" + password1 + "\n" + password2;
+
+    SecureClipboard::instance().setContent(all);\
+
+    Crypto::erase(login);
+    Crypto::erase(password1);
+    Crypto::erase(password2);
+    Crypto::erase(all);
 }
