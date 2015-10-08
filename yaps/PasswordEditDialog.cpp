@@ -7,12 +7,16 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QMessageBox>
+
+#include "crypto.h"
+#include "crypto_engine.h"
 #include "PasswordsModel.h"
-#include "Crypto.h"
 #include "SecureClipboard.h"
 
-PasswordEditDialog::PasswordEditDialog(const QString& title)
+PasswordEditDialog::PasswordEditDialog(const QString& title,
+                                       std::shared_ptr<yaps::CryptoFactory> cryptoFactory)
 {
+    m_cryptoFactory = std::move(cryptoFactory);
     m_name = new QLineEdit;
     m_login = new QLineEdit;
     m_password = new QLineEdit;
@@ -58,7 +62,7 @@ PasswordEditDialog::PasswordEditDialog(const QString& title)
 
 bool PasswordEditDialog::setPasswordRecord(const PasswordRecord& record)
 {
-    auto crypto = Crypto::instance();
+    auto crypto = m_cryptoFactory->getCrypto();
     if (!crypto)
         return false;
 
@@ -70,7 +74,7 @@ bool PasswordEditDialog::setPasswordRecord(const PasswordRecord& record)
     int loginLength = decrypted.indexOf('\n');
     if (loginLength > 0)
         m_login->setText(decrypted.left(loginLength));
-    Crypto::erase(decrypted);
+    yaps::eraseString(decrypted);
 
     return true;
 }
@@ -105,7 +109,7 @@ void PasswordEditDialog::accept()
 
 bool PasswordEditDialog::commit()
 {
-    auto crypto = Crypto::instance();
+    auto crypto = m_cryptoFactory->getCrypto();
     if (!crypto)
         return false;
 
@@ -132,7 +136,7 @@ bool PasswordEditDialog::commit()
 
 void PasswordEditDialog::generatePassword()
 {
-    auto crypto = Crypto::instance();
+    auto crypto = m_cryptoFactory->getCrypto();
     if (!crypto)
         return;
 
@@ -140,7 +144,7 @@ void PasswordEditDialog::generatePassword()
     crypto->generatePassword(password);
     m_password->setText(password);
     m_password2->setText(password);
-    Crypto::erase(password);
+    yaps::eraseString(password);
 }
 
 void PasswordEditDialog::copyAll()
@@ -152,8 +156,8 @@ void PasswordEditDialog::copyAll()
 
     SecureClipboard::instance().setContent(all);\
 
-    Crypto::erase(login);
-    Crypto::erase(password1);
-    Crypto::erase(password2);
-    Crypto::erase(all);
+    yaps::eraseString(login);
+    yaps::eraseString(password1);
+    yaps::eraseString(password2);
+    yaps::eraseString(all);
 }

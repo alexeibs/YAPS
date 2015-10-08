@@ -20,9 +20,13 @@ SOURCES += main.cpp\
     View.cpp \
     PasswordsModel.cpp \
     SecureClipboard.cpp \
-    Crypto.cpp \
     PasswordEditDialog.cpp \
-    GlobalPasswordDialog.cpp
+    timer_impl.cpp \
+    crypto_factory_impl.cpp \
+    crypto_impl.cpp \
+    crypto_engine_impl.cpp \
+    GlobalPasswordDialog.cpp \
+    password_prompt_impl.cpp
 
 HEADERS  += mainwindow.h \
     MainActions.h \
@@ -30,9 +34,19 @@ HEADERS  += mainwindow.h \
     View.h \
     PasswordsModel.h \
     SecureClipboard.h \
-    Crypto.h \
     PasswordEditDialog.h \
-    GlobalPasswordDialog.h
+    crypto_factory_impl.h \
+    timer_impl.h \
+    timer.h \
+    crypto_status.h \
+    crypto_engine_impl.h \
+    crypto_engine.h \
+    crypto_impl.h \
+    password_lock.h \
+    crypto.h \
+    password_prompt.h \
+    GlobalPasswordDialog.h \
+    password_prompt_impl.h
 
 RESOURCES += \
     resources/main.qrc

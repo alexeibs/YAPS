@@ -11,7 +11,12 @@
 #include "mainwindow.h"
 #include "MainActions.h"
 #include "Database.h"
-#include "Crypto.h"
+//#include "Crypto.h"
+
+#include "crypto_engine_impl.h"
+#include "crypto_factory_impl.h"
+#include "password_prompt_impl.h"
+#include "timer_impl.h"
 
 #define YAPS_ID "YAPS-6d049d5f-2a4a-4910-8713-249dacbbd700"
 
@@ -30,18 +35,25 @@ int main(int argc, char *argv[])
     application.setWindowIcon(QIcon(":/icons/app"));
     setupTranslations();
 
-    if (!Crypto::instance())
-        return 2;
     QJsonDocument config = loadConfig();
     if (!setupDatabase(getDatabasePath(config)))
         return 1;
 
     MainWindow mainWindow; // MainWindow should be created before first call Actions::instance
 
-    auto& actions = Actions::instance();
-    actions.initialize();
+    auto actions = Actions::instance();
+    auto cryptoFactory = std::make_shared<yaps::CryptoFactoryImpl>(
+        std::make_shared<yaps::CryptoEngineImpl>(),
+        std::make_shared<yaps::PasswordPromptImpl>(),
+        std::make_shared<yaps::TimerImpl>(),
+        actions
+    );
 
-    mainWindow.setMainWidget(actions.view());
+    actions->initialize();
+    actions->setCryptoFactory(cryptoFactory);
+    actions->setCryptoStatus(cryptoFactory);
+
+    mainWindow.setMainWidget(actions->view());
     mainWindow.toggleWindow();
 
     return application.exec();

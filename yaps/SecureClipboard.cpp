@@ -4,7 +4,7 @@
 #include <QApplication>
 #include <QClipboard>
 
-#include "Crypto.h"
+#include "crypto_engine.h"
 
 #define CLIPBOARD_TIMEOUT 5000
 
@@ -40,7 +40,7 @@ void SecureClipboard::clear()
         QApplication::clipboard()->clear();
         m_clearTimer->stop();
         for (auto it = m_content.begin(), itEnd = m_content.end(); it != itEnd; ++it)
-            Crypto::erase(*it);
+            yaps::eraseString(*it);
         m_content.clear();
     }
 }
@@ -58,7 +58,7 @@ void SecureClipboard::nextItem()
     } else {
         m_needToClearClipboard = true;
         QApplication::clipboard()->setText(m_content.front());
-        Crypto::erase(m_content.first());
+        yaps::eraseString(m_content.first());
         m_content.removeFirst();
         m_clearTimer->start(5000);
     }

@@ -2,19 +2,21 @@
 
 #include <QAction>
 #include <QListView>
+#include <QMessageBox>
+
+#include "crypto.h"
+#include "crypto_engine.h"
+
 #include "mainwindow.h"
 #include "PasswordsModel.h"
 #include "Database.h"
 #include "View.h"
 #include "SecureClipboard.h"
-#include "Crypto.h"
 #include "PasswordEditDialog.h"
 
-#include <QMessageBox>
-
-Actions& Actions::instance()
+std::shared_ptr<Actions> Actions::instance()
 {
-    static Actions single;
+    static std::shared_ptr<Actions> single(new Actions);
     return single;
 }
 
@@ -79,12 +81,6 @@ void Actions::initialize()
     m_expireAction = createAction(tr("Reset master password (F12)"), QIcon(":/icons/forget_pwd"));
     action->setShortcut(QKeySequence(Qt::Key_F12));
     connect(m_expireAction, SIGNAL(triggered()), this, SLOT(clearGlobalPassword()));
-
-    auto crypto = Crypto::instance();
-    if (crypto) {
-        connect(crypto.get(), SIGNAL(globalPasswordRefreshed()), this, SLOT(globalPasswordRefreshed()));
-        connect(crypto.get(), SIGNAL(globalPasswordExpired()), this, SLOT(globalPasswordExpired()));
-    }
 }
 
 QAction* Actions::createAction(const QString& name, const QIcon& icon)
@@ -98,13 +94,13 @@ void Actions::copyToClipboard()
 {
     PasswordRecord record;
     if (m_model->getRecord(m_view->currentIndex(), record)) {
-        auto crypto = Crypto::instance();
+        auto crypto = getCrypto();
         if (!crypto)
             return;
         QString decrypted;
         crypto->decrypt(record.password, decrypted);
         SecureClipboard::instance().setContent(decrypted);
-        Crypto::erase(decrypted);
+        yaps::eraseString(decrypted);
         m_mainWindow->toggleWindow();
     }
 }
@@ -113,15 +109,15 @@ void Actions::copyPasswordToClipboard()
 {
     PasswordRecord record;
     if (m_model->getRecord(m_view->currentIndex(), record)) {
-        auto crypto = Crypto::instance();
+        auto crypto = getCrypto();
         if (!crypto)
             return;
         QString decrypted;
         crypto->decrypt(record.password, decrypted);
         QString password = decrypted.mid(decrypted.lastIndexOf('\n') + 1);
         SecureClipboard::instance().setContent(password);
-        Crypto::erase(decrypted);
-        Crypto::erase(password);
+        yaps::eraseString(decrypted);
+        yaps::eraseString(password);
         m_mainWindow->toggleWindow();
     }
 }
@@ -133,8 +129,11 @@ void Actions::clipboardPasted()
 
 void Actions::addPassword()
 {
+    auto cryptoFactory = m_cryptoFactory.lock();
+    if (!cryptoFactory)
+        return;
     PasswordRecord record;
-    PasswordEditDialog dialog(tr("New password"));
+    PasswordEditDialog dialog(tr("New password"), move(cryptoFactory));
     if (!dialog.setPasswordRecord(record)) // Crypto API is inaccessible
         return;
     if (dialog.exec() == QDialog::Rejected)
@@ -156,7 +155,10 @@ void Actions::editPassword()
         return;
     PasswordRecord record;
     if (m_model->getRecord(m_view->currentIndex(), record)) {
-        PasswordEditDialog dialog(tr("Edit password"));
+        auto cryptoFactory = m_cryptoFactory.lock();
+        if (!cryptoFactory)
+            return;
+        PasswordEditDialog dialog(tr("Edit password"), move(cryptoFactory));
         if (!dialog.setPasswordRecord(record))
             return;
         dialog.setNameReadOnly(true);
@@ -177,15 +179,37 @@ void Actions::deletePassword()
 
 void Actions::clearGlobalPassword()
 {
-    Crypto::clearGlobalPassword();
+    auto cryptoStatus = m_cryptoStatus.lock();
+    if (cryptoStatus) {
+        cryptoStatus->clearPassword();
+    }
 }
 
-void Actions::globalPasswordRefreshed()
+void Actions::setCryptoStatus(std::weak_ptr<yaps::CryptoStatus> cryptoStatus)
 {
-    m_expireAction->setEnabled(true);
+    m_cryptoStatus = move(cryptoStatus);
+    updateCryptoStatus();
 }
 
-void Actions::globalPasswordExpired()
+void Actions::updateCryptoStatus()
 {
-    m_expireAction->setEnabled(false);
+    auto cryptoStatus = m_cryptoStatus.lock();
+    if (cryptoStatus) {
+        m_expireAction->setEnabled(cryptoStatus->hasPassword());
+    }
+}
+
+void Actions::setCryptoFactory(std::weak_ptr<yaps::CryptoFactory> cryptoFactory)
+{
+    m_cryptoFactory = move(cryptoFactory);
+}
+
+std::unique_ptr<yaps::Crypto> Actions::getCrypto()
+{
+    std::unique_ptr<yaps::Crypto> crypto;
+    auto cryptoFactory = m_cryptoFactory.lock();
+    if (cryptoFactory) {
+        crypto = cryptoFactory->getCrypto();
+    }
+    return crypto;
 }

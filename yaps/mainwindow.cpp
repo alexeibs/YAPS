@@ -39,12 +39,12 @@ MainWindow::MainWindow(QWidget *parent)
     setMinimumSize(QSize(150, 200));
     createTrayIcon();
 
-    Actions::instance().setMainWindow(this);
+    Actions::instance()->setMainWindow(this);
 }
 
 MainWindow::~MainWindow()
 {
-    Actions::instance().setMainWindow(nullptr);
+    Actions::instance()->setMainWindow(nullptr);
 #ifdef Q_OS_WIN
     removeKeyBoardHook();
     // register global hotkey
@@ -148,7 +148,7 @@ bool MainWindow::nativeEvent(const QByteArray&, void *message, long *result)
         return true;
     }
     if (msg->message == WM_CLIPBOARD_PASTE)
-        Actions::instance().clipboardPasted();
+        Actions::instance()->clipboardPasted();
     return false;
 }
 #endif

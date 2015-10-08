@@ -1,7 +1,11 @@
 #ifndef MAINACTIONS_H
 #define MAINACTIONS_H
 
+#include <memory>
+
 #include <QObject>
+
+#include "crypto_status.h"
 
 class QString;
 class QAction;
@@ -12,15 +16,24 @@ class MainWindow;
 class PasswordsModel;
 class QListView;
 
-class Actions : public QObject { Q_OBJECT
+namespace yaps {
+    struct Crypto;
+    struct CryptoFactory;
+}
+
+class Actions : public QObject, public yaps::CryptoStatusView { Q_OBJECT
 public:
-    static Actions& instance();
+    static std::shared_ptr<Actions> instance();
 
     void initialize();
     void setMainWindow(MainWindow*); //automatically called by MainWindow
 
     QAbstractItemModel* model();
     QAbstractItemView* view();
+
+    void setCryptoFactory(std::weak_ptr<yaps::CryptoFactory>);
+    void setCryptoStatus(std::weak_ptr<yaps::CryptoStatus>);
+    void updateCryptoStatus() override;
 
 public slots:
     void copyToClipboard();
@@ -32,8 +45,6 @@ public slots:
     void deletePassword();
 
     void clearGlobalPassword();
-    void globalPasswordRefreshed();
-    void globalPasswordExpired();
 
 private:
     Actions();
@@ -44,11 +55,15 @@ private:
 
     QAction* createAction(const QString& name, const QIcon& icon);
 
+    std::unique_ptr<yaps::Crypto> getCrypto();
+
 private:
     MainWindow* m_mainWindow;
     PasswordsModel* m_model;
     QListView* m_view;
     QAction* m_expireAction;
+    std::weak_ptr<yaps::CryptoFactory> m_cryptoFactory;
+    std::weak_ptr<yaps::CryptoStatus> m_cryptoStatus;
 };
 
 #endif // MAINACTIONS_H
