@@ -1,6 +1,9 @@
 #include "crypto_factory_impl.h"
 
+#include "crypto_engine.h"
 #include "crypto_impl.h"
+#include "password_prompt.h"
+#include "timer.h"
 
 namespace yaps {
 

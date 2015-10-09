@@ -5,13 +5,14 @@
 #include <QString>
 
 #include "crypto.h"
-#include "crypto_engine.h"
 #include "crypto_status.h"
 #include "password_lock.h"
-#include "password_prompt.h"
-#include "timer.h"
 
 namespace yaps {
+
+struct CryptoEngine;
+struct PasswordPrompt;
+struct Timer;
 
 struct CryptoFactoryImpl : std::enable_shared_from_this<CryptoFactoryImpl>,
                            CryptoFactory,

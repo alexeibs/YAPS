@@ -11,16 +11,16 @@ class QLineEdit;
 struct PasswordRecord;
 
 namespace yaps {
-    struct CryptoFactory;
+    struct Crypto;
 }
 
 class PasswordEditDialog : public QDialog { Q_OBJECT
 public:
-    PasswordEditDialog(const QString& title, std::shared_ptr<yaps::CryptoFactory>);
+    PasswordEditDialog(const QString& title, std::unique_ptr<yaps::Crypto>);
+    ~PasswordEditDialog();
     void setNameReadOnly(bool readOnly);
 
-    // returns false if Crypto API is inaccessible
-    bool setPasswordRecord(const PasswordRecord&);
+    void setPasswordRecord(const PasswordRecord&);
     PasswordRecord passwordRecord() const { return m_record; }
 
 public slots:
@@ -40,7 +40,7 @@ private:
     QLineEdit* m_password;
     QLineEdit* m_password2;
 
-    std::shared_ptr<yaps::CryptoFactory> m_cryptoFactory;
+    std::unique_ptr<yaps::Crypto> m_crypto;
 };
 
 #endif // PASSWORDEDITDIALOG_H

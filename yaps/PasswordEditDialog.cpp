@@ -9,14 +9,16 @@
 #include <QMessageBox>
 
 #include "crypto.h"
-#include "crypto_engine.h"
 #include "PasswordsModel.h"
 #include "SecureClipboard.h"
 
 PasswordEditDialog::PasswordEditDialog(const QString& title,
-                                       std::shared_ptr<yaps::CryptoFactory> cryptoFactory)
+                                       std::unique_ptr<yaps::Crypto> crypto)
 {
-    m_cryptoFactory = std::move(cryptoFactory);
+    if (!crypto) {
+        throw std::logic_error("Crypto pointer is null");
+    }
+    m_crypto = std::move(crypto);
     m_name = new QLineEdit;
     m_login = new QLineEdit;
     m_password = new QLineEdit;
@@ -60,23 +62,21 @@ PasswordEditDialog::PasswordEditDialog(const QString& title,
     setWindowFlags(Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
 }
 
-bool PasswordEditDialog::setPasswordRecord(const PasswordRecord& record)
+PasswordEditDialog::~PasswordEditDialog()
 {
-    auto crypto = m_cryptoFactory->getCrypto();
-    if (!crypto)
-        return false;
+}
 
+void PasswordEditDialog::setPasswordRecord(const PasswordRecord& record)
+{
     m_record = record;
     m_name->setText(m_record.name);
 
     QString decrypted;
-    crypto->decrypt(record.password, decrypted);
+    m_crypto->decrypt(record.password, decrypted);
     int loginLength = decrypted.indexOf('\n');
     if (loginLength > 0)
         m_login->setText(decrypted.left(loginLength));
-    yaps::eraseString(decrypted);
-
-    return true;
+    m_crypto->eraseString(decrypted);
 }
 
 void PasswordEditDialog::setNameReadOnly(bool readOnly)
@@ -109,10 +109,6 @@ void PasswordEditDialog::accept()
 
 bool PasswordEditDialog::commit()
 {
-    auto crypto = m_cryptoFactory->getCrypto();
-    if (!crypto)
-        return false;
-
     // fill in PasswordRecord
     m_record.name = m_name->text();
     if (m_login->text().isEmpty())
@@ -129,22 +125,18 @@ bool PasswordEditDialog::commit()
     m_password2->setText(eraser);
 
     // encrypt PasswordRecord
-    crypto->encrypt(m_record.password);
+    m_crypto->encrypt(m_record.password);
 
     return true;
 }
 
 void PasswordEditDialog::generatePassword()
 {
-    auto crypto = m_cryptoFactory->getCrypto();
-    if (!crypto)
-        return;
-
     QString password;
-    crypto->generatePassword(password);
+    m_crypto->generatePassword(password);
     m_password->setText(password);
     m_password2->setText(password);
-    yaps::eraseString(password);
+    m_crypto->eraseString(password);
 }
 
 void PasswordEditDialog::copyAll()
@@ -156,8 +148,8 @@ void PasswordEditDialog::copyAll()
 
     SecureClipboard::instance().setContent(all);\
 
-    yaps::eraseString(login);
-    yaps::eraseString(password1);
-    yaps::eraseString(password2);
-    yaps::eraseString(all);
+    m_crypto->eraseString(login);
+    m_crypto->eraseString(password1);
+    m_crypto->eraseString(password2);
+    m_crypto->eraseString(all);
 }

@@ -3,10 +3,11 @@
 #include <memory>
 
 #include "crypto.h"
-#include "crypto_engine.h"
-#include "password_lock.h"
 
 namespace yaps {
+
+struct CryptoEngine;
+struct PasswordLock;
 
 struct CryptoImpl : Crypto {
   CryptoImpl(std::shared_ptr<CryptoEngine> engine, std::shared_ptr<PasswordLock> passwordLock);
@@ -15,6 +16,7 @@ struct CryptoImpl : Crypto {
   void encrypt(QString& text) override;
   void decrypt(const QString& input, QString& output) override;
   void generatePassword(QString& password) override;
+  void eraseString(QString &stringToErase) override;
 
 private:
   std::shared_ptr<CryptoEngine> cryptoEngine_;

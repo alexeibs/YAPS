@@ -11,6 +11,7 @@ struct Crypto {
   virtual void encrypt(QString& text) = 0;
   virtual void decrypt(const QString& input, QString& output) = 0;
   virtual void generatePassword(QString& password) = 0;
+  virtual void eraseString(QString& stringToErase) = 0;
 };
 
 struct CryptoFactory {

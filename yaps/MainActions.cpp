@@ -5,7 +5,6 @@
 #include <QMessageBox>
 
 #include "crypto.h"
-#include "crypto_engine.h"
 
 #include "mainwindow.h"
 #include "PasswordsModel.h"
@@ -100,7 +99,7 @@ void Actions::copyToClipboard()
         QString decrypted;
         crypto->decrypt(record.password, decrypted);
         SecureClipboard::instance().setContent(decrypted);
-        yaps::eraseString(decrypted);
+        crypto->eraseString(decrypted);
         m_mainWindow->toggleWindow();
     }
 }
@@ -116,8 +115,8 @@ void Actions::copyPasswordToClipboard()
         crypto->decrypt(record.password, decrypted);
         QString password = decrypted.mid(decrypted.lastIndexOf('\n') + 1);
         SecureClipboard::instance().setContent(password);
-        yaps::eraseString(decrypted);
-        yaps::eraseString(password);
+        crypto->eraseString(decrypted);
+        crypto->eraseString(password);
         m_mainWindow->toggleWindow();
     }
 }
@@ -129,10 +128,12 @@ void Actions::clipboardPasted()
 
 void Actions::addPassword()
 {
-    PasswordRecord record;
-    PasswordEditDialog dialog(tr("New password"), m_cryptoFactory);
-    if (!dialog.setPasswordRecord(record)) // Crypto API is inaccessible
+    auto crypto = m_cryptoFactory->getCrypto();
+    if (!crypto) // check if Crypto API is accessible
         return;
+    PasswordRecord record;
+    PasswordEditDialog dialog(tr("New password"), move(crypto));
+    dialog.setPasswordRecord(record);
     if (dialog.exec() == QDialog::Rejected)
         return;
     record = dialog.passwordRecord();
@@ -152,9 +153,11 @@ void Actions::editPassword()
         return;
     PasswordRecord record;
     if (m_model->getRecord(m_view->currentIndex(), record)) {
-        PasswordEditDialog dialog(tr("Edit password"), m_cryptoFactory);
-        if (!dialog.setPasswordRecord(record))
+        auto crypto = m_cryptoFactory->getCrypto();
+        if (!crypto) // check if Crypto API is accessible
             return;
+        PasswordEditDialog dialog(tr("Edit password"), move(crypto));
+        dialog.setPasswordRecord(record);
         dialog.setNameReadOnly(true);
         if (dialog.exec() == QDialog::Rejected)
             return;
