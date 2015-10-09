@@ -9,12 +9,10 @@ const int RESCHEDULE_INTERVAL = 100;
 
 CryptoFactoryImpl::CryptoFactoryImpl(std::shared_ptr<CryptoEngine> engine,
                                      std::shared_ptr<PasswordPrompt> prompt,
-                                     std::shared_ptr<Timer> expirationTimer,
-                                     std::shared_ptr<CryptoStatusView> statusView)
+                                     std::shared_ptr<Timer> expirationTimer)
     : cryptoEngine_(move(engine)),
       passwordPrompt_(move(prompt)),
-      expirationTimer_(move(expirationTimer)),
-      statusView_(move(statusView)) {
+      expirationTimer_(move(expirationTimer)) {
 
   expirationTimer_->setCallback([this]() {
     clearPassword();
@@ -35,7 +33,7 @@ std::unique_ptr<Crypto> CryptoFactoryImpl::getCrypto() {
   }
 
   expirationTimer_->start(EXPIRATION_INTERVAL);
-  statusView_->updateCryptoStatus();
+  triggerStatusViewUpdate();
 
   // gcc 4.8 doesn't support std::make_unique
   return std::unique_ptr<Crypto>{new CryptoImpl(cryptoEngine_, shared_from_this())};
@@ -47,7 +45,7 @@ void CryptoFactoryImpl::clearPassword() {
   } else if (!masterPassword_.isEmpty()) {
     expirationTimer_->stop();
     eraseString(masterPassword_);
-    statusView_->updateCryptoStatus();
+    triggerStatusViewUpdate();
   }
 }
 
@@ -68,6 +66,18 @@ void CryptoFactoryImpl::unlockPassword() {
     throw std::logic_error("The master password has not been locked yet.");
   }
   passwordLocked_ = false;
+}
+
+void CryptoFactoryImpl::setCryptoStatusView(std::weak_ptr<CryptoStatusView> view) {
+  statusView_ = move(view);
+  triggerStatusViewUpdate();
+}
+
+void CryptoFactoryImpl::triggerStatusViewUpdate() {
+  auto cryptoStatusView = statusView_.lock();
+  if (cryptoStatusView) {
+    cryptoStatusView->updateCryptoStatus();
+  }
 }
 
 }  // namesapce yaps

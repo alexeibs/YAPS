@@ -45,13 +45,13 @@ int main(int argc, char *argv[])
     auto cryptoFactory = std::make_shared<yaps::CryptoFactoryImpl>(
         std::make_shared<yaps::CryptoEngineImpl>(),
         std::make_shared<yaps::PasswordPromptImpl>(),
-        std::make_shared<yaps::TimerImpl>(),
-        actions
+        std::make_shared<yaps::TimerImpl>()
     );
 
     actions->initialize();
     actions->setCryptoFactory(cryptoFactory);
     actions->setCryptoStatus(cryptoFactory);
+    cryptoFactory->setCryptoStatusView(actions);
 
     mainWindow.setMainWidget(actions->view());
     mainWindow.toggleWindow();

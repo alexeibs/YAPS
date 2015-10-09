@@ -19,9 +19,10 @@ struct CryptoFactoryImpl : std::enable_shared_from_this<CryptoFactoryImpl>,
                            PasswordLock {
   CryptoFactoryImpl(std::shared_ptr<CryptoEngine>,
                     std::shared_ptr<PasswordPrompt>,
-                    std::shared_ptr<Timer> expirationTimer,
-                    std::shared_ptr<CryptoStatusView>);
+                    std::shared_ptr<Timer> expirationTimer);
   ~CryptoFactoryImpl();
+
+  void setCryptoStatusView(std::weak_ptr<CryptoStatusView>);
 
   // CryptoFactory interface
   std::unique_ptr<Crypto> getCrypto() override;
@@ -35,10 +36,12 @@ struct CryptoFactoryImpl : std::enable_shared_from_this<CryptoFactoryImpl>,
   void unlockPassword() override;
 
 private:
+  void triggerStatusViewUpdate();
+
   std::shared_ptr<CryptoEngine> cryptoEngine_;
   std::shared_ptr<PasswordPrompt> passwordPrompt_;
   std::shared_ptr<Timer> expirationTimer_;
-  std::shared_ptr<CryptoStatusView> statusView_;
+  std::weak_ptr<CryptoStatusView> statusView_;
   QString masterPassword_;
   bool passwordLocked_ = false;
 };

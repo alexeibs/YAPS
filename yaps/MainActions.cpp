@@ -94,7 +94,7 @@ void Actions::copyToClipboard()
 {
     PasswordRecord record;
     if (m_model->getRecord(m_view->currentIndex(), record)) {
-        auto crypto = getCrypto();
+        auto crypto = m_cryptoFactory->getCrypto();
         if (!crypto)
             return;
         QString decrypted;
@@ -109,7 +109,7 @@ void Actions::copyPasswordToClipboard()
 {
     PasswordRecord record;
     if (m_model->getRecord(m_view->currentIndex(), record)) {
-        auto crypto = getCrypto();
+        auto crypto = m_cryptoFactory->getCrypto();
         if (!crypto)
             return;
         QString decrypted;
@@ -129,11 +129,8 @@ void Actions::clipboardPasted()
 
 void Actions::addPassword()
 {
-    auto cryptoFactory = m_cryptoFactory.lock();
-    if (!cryptoFactory)
-        return;
     PasswordRecord record;
-    PasswordEditDialog dialog(tr("New password"), move(cryptoFactory));
+    PasswordEditDialog dialog(tr("New password"), m_cryptoFactory);
     if (!dialog.setPasswordRecord(record)) // Crypto API is inaccessible
         return;
     if (dialog.exec() == QDialog::Rejected)
@@ -155,10 +152,7 @@ void Actions::editPassword()
         return;
     PasswordRecord record;
     if (m_model->getRecord(m_view->currentIndex(), record)) {
-        auto cryptoFactory = m_cryptoFactory.lock();
-        if (!cryptoFactory)
-            return;
-        PasswordEditDialog dialog(tr("Edit password"), move(cryptoFactory));
+        PasswordEditDialog dialog(tr("Edit password"), m_cryptoFactory);
         if (!dialog.setPasswordRecord(record))
             return;
         dialog.setNameReadOnly(true);
@@ -179,37 +173,20 @@ void Actions::deletePassword()
 
 void Actions::clearGlobalPassword()
 {
-    auto cryptoStatus = m_cryptoStatus.lock();
-    if (cryptoStatus) {
-        cryptoStatus->clearPassword();
-    }
+    m_cryptoStatus->clearPassword();
 }
 
-void Actions::setCryptoStatus(std::weak_ptr<yaps::CryptoStatus> cryptoStatus)
+void Actions::setCryptoStatus(std::shared_ptr<yaps::CryptoStatus> cryptoStatus)
 {
     m_cryptoStatus = move(cryptoStatus);
-    updateCryptoStatus();
 }
 
 void Actions::updateCryptoStatus()
 {
-    auto cryptoStatus = m_cryptoStatus.lock();
-    if (cryptoStatus) {
-        m_expireAction->setEnabled(cryptoStatus->hasPassword());
-    }
+    m_expireAction->setEnabled(m_cryptoStatus->hasPassword());
 }
 
-void Actions::setCryptoFactory(std::weak_ptr<yaps::CryptoFactory> cryptoFactory)
+void Actions::setCryptoFactory(std::shared_ptr<yaps::CryptoFactory> cryptoFactory)
 {
     m_cryptoFactory = move(cryptoFactory);
-}
-
-std::unique_ptr<yaps::Crypto> Actions::getCrypto()
-{
-    std::unique_ptr<yaps::Crypto> crypto;
-    auto cryptoFactory = m_cryptoFactory.lock();
-    if (cryptoFactory) {
-        crypto = cryptoFactory->getCrypto();
-    }
-    return crypto;
 }

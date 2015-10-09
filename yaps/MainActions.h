@@ -17,7 +17,6 @@ class PasswordsModel;
 class QListView;
 
 namespace yaps {
-    struct Crypto;
     struct CryptoFactory;
 }
 
@@ -31,8 +30,8 @@ public:
     QAbstractItemModel* model();
     QAbstractItemView* view();
 
-    void setCryptoFactory(std::weak_ptr<yaps::CryptoFactory>);
-    void setCryptoStatus(std::weak_ptr<yaps::CryptoStatus>);
+    void setCryptoFactory(std::shared_ptr<yaps::CryptoFactory>);
+    void setCryptoStatus(std::shared_ptr<yaps::CryptoStatus>);
     void updateCryptoStatus() override;
 
 public slots:
@@ -55,15 +54,13 @@ private:
 
     QAction* createAction(const QString& name, const QIcon& icon);
 
-    std::unique_ptr<yaps::Crypto> getCrypto();
-
 private:
     MainWindow* m_mainWindow;
     PasswordsModel* m_model;
     QListView* m_view;
     QAction* m_expireAction;
-    std::weak_ptr<yaps::CryptoFactory> m_cryptoFactory;
-    std::weak_ptr<yaps::CryptoStatus> m_cryptoStatus;
+    std::shared_ptr<yaps::CryptoFactory> m_cryptoFactory;
+    std::shared_ptr<yaps::CryptoStatus> m_cryptoStatus;
 };
 
 #endif // MAINACTIONS_H
