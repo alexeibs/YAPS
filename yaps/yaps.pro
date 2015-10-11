@@ -15,7 +15,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    MainActions.cpp \
     Database.cpp \
     View.cpp \
     PasswordsModel.cpp \
@@ -26,10 +25,11 @@ SOURCES += main.cpp\
     crypto_impl.cpp \
     crypto_engine_impl.cpp \
     GlobalPasswordDialog.cpp \
-    password_prompt_impl.cpp
+    password_prompt_impl.cpp \
+    toolbar_view.cpp \
+    controller_impl.cpp
 
 HEADERS  += mainwindow.h \
-    MainActions.h \
     Database.h \
     View.h \
     PasswordsModel.h \
@@ -46,7 +46,11 @@ HEADERS  += mainwindow.h \
     crypto.h \
     password_prompt.h \
     GlobalPasswordDialog.h \
-    password_prompt_impl.h
+    password_prompt_impl.h \
+    toolbar_view.h \
+    controller.h \
+    controller_impl.h \
+    view_state.h
 
 RESOURCES += \
     resources/main.qrc

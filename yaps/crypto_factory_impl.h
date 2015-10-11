@@ -23,7 +23,7 @@ struct CryptoFactoryImpl : std::enable_shared_from_this<CryptoFactoryImpl>,
                     std::shared_ptr<Timer> expirationTimer);
   ~CryptoFactoryImpl();
 
-  void setCryptoStatusView(std::weak_ptr<CryptoStatusView>);
+  void setCryptoStatusView(CryptoStatusView*);
 
   // CryptoFactory interface
   std::unique_ptr<Crypto> getCrypto() override;
@@ -42,7 +42,7 @@ private:
   std::shared_ptr<CryptoEngine> cryptoEngine_;
   std::shared_ptr<PasswordPrompt> passwordPrompt_;
   std::shared_ptr<Timer> expirationTimer_;
-  std::weak_ptr<CryptoStatusView> statusView_;
+  CryptoStatusView* statusView_ = nullptr;
   QString masterPassword_;
   bool passwordLocked_ = false;
 };

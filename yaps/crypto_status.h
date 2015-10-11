@@ -10,7 +10,7 @@ struct CryptoStatus {
 
 struct CryptoStatusView {
   virtual ~CryptoStatusView() {}
-  virtual void updateCryptoStatus() = 0;
+  virtual void updateCryptoStatus(const CryptoStatus&) = 0;
 };
 
 }  // namespace yaps

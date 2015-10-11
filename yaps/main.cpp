@@ -1,7 +1,6 @@
 #include <QApplication>
 #include <QScopedPointer>
 #include <QSharedMemory>
-#include <QAbstractItemView>
 #include <QFile>
 #include <QTranslator>
 #include <QJsonDocument>
@@ -9,10 +8,10 @@
 #include <QJsonObject>
 
 #include "mainwindow.h"
-#include "MainActions.h"
 #include "Database.h"
-//#include "Crypto.h"
+#include "PasswordsModel.h"
 
+#include "controller_impl.h"
 #include "crypto_engine_impl.h"
 #include "crypto_factory_impl.h"
 #include "password_prompt_impl.h"
@@ -39,21 +38,19 @@ int main(int argc, char *argv[])
     if (!setupDatabase(getDatabasePath(config)))
         return 1;
 
-    MainWindow mainWindow; // MainWindow should be created before first call Actions::instance
-
-    auto actions = Actions::instance();
+    auto passwordsModel = makeModel(&application);
     auto cryptoFactory = std::make_shared<yaps::CryptoFactoryImpl>(
         std::make_shared<yaps::CryptoEngineImpl>(),
         std::make_shared<yaps::PasswordPromptImpl>(),
         std::make_shared<yaps::TimerImpl>()
     );
+    auto controller = std::make_shared<yaps::ControllerImpl>(
+        cryptoFactory, cryptoFactory, *passwordsModel);
+    MainWindow mainWindow(passwordsModel, controller);
 
-    actions->initialize();
-    actions->setCryptoFactory(cryptoFactory);
-    actions->setCryptoStatus(cryptoFactory);
-    cryptoFactory->setCryptoStatusView(actions);
+    controller->setViewState(&mainWindow);
+    cryptoFactory->setCryptoStatusView(mainWindow.cryptoStatusView());
 
-    mainWindow.setMainWidget(actions->view());
     mainWindow.toggleWindow();
 
     return application.exec();

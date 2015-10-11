@@ -71,15 +71,14 @@ void CryptoFactoryImpl::unlockPassword() {
   passwordLocked_ = false;
 }
 
-void CryptoFactoryImpl::setCryptoStatusView(std::weak_ptr<CryptoStatusView> view) {
-  statusView_ = move(view);
+void CryptoFactoryImpl::setCryptoStatusView(CryptoStatusView* view) {
+  statusView_ = view;
   triggerStatusViewUpdate();
 }
 
 void CryptoFactoryImpl::triggerStatusViewUpdate() {
-  auto cryptoStatusView = statusView_.lock();
-  if (cryptoStatusView) {
-    cryptoStatusView->updateCryptoStatus();
+  if (statusView_) {
+    statusView_->updateCryptoStatus(*this);
   }
 }
 

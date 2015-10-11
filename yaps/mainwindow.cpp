@@ -7,7 +7,7 @@
 #include <QCloseEvent>
 #include <QSystemTrayIcon>
 #include <QApplication>
-#include <QToolBar>
+#include <QListView>
 
 #ifdef Q_OS_WIN
 #include "qt_windows.h"
@@ -18,19 +18,22 @@
 #include "kbhook/winkbhook.h"
 #endif
 
-#include "MainActions.h"
+#include "controller.h"
+#include "toolbar_view.h"
+#include "View.h"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QWidget(parent)
+MainWindow::MainWindow(QAbstractItemModel* model, std::shared_ptr<yaps::Controller> controller)
+    : m_controller(std::move(controller))
 {
-    m_toolbar = new QToolBar;
+    m_toolbar = new yaps::ToolbarView(this, *m_controller);
     m_toolbar->setOrientation(Qt::Vertical);
 
-    auto label = new QLabel("YAPS", this);
+    m_passwordList = makeView(model, 0); // TODO get rid of this zero
+
     auto layout = new QHBoxLayout;
     layout->setSpacing(0);
     layout->addWidget(m_toolbar);
-    layout->addWidget(label, 1, Qt::AlignCenter);
+    layout->addWidget(m_passwordList, 1);
     layout->setContentsMargins(0, 0, 0, 0);
 
     setLayout(layout);
@@ -38,36 +41,15 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
     setMinimumSize(QSize(150, 200));
     createTrayIcon();
-
-    Actions::instance()->setMainWindow(this);
 }
 
 MainWindow::~MainWindow()
 {
-    Actions::instance()->setMainWindow(nullptr);
 #ifdef Q_OS_WIN
     removeKeyBoardHook();
     // register global hotkey
     UnregisterHotKey((HWND)winId(), TOGGLE_WINDOW_HOTKEY);
 #endif
-}
-
-void MainWindow::addActionIntoToolbar(QAction* action)
-{
-    if (action)
-        m_toolbar->addAction(action);
-    else
-        m_toolbar->addSeparator();
-}
-
-void MainWindow::setMainWidget(QWidget* widget)
-{
-    auto mainLayout = dynamic_cast<QBoxLayout*>(layout());
-    auto oldItem = mainLayout->itemAt(mainLayout->count() - 1);
-    auto oldWidget = oldItem->widget();
-    mainLayout->removeItem(oldItem);
-    mainLayout->addWidget(widget, 1);
-    delete oldWidget;
 }
 
 void MainWindow::createTrayIcon()
@@ -148,7 +130,29 @@ bool MainWindow::nativeEvent(const QByteArray&, void *message, long *result)
         return true;
     }
     if (msg->message == WM_CLIPBOARD_PASTE)
-        Actions::instance()->clipboardPasted();
+        m_controller->copyNextItemToClipboard();
     return false;
 }
 #endif
+
+
+int MainWindow::currentRecordIndex() const
+{
+    return m_passwordList->currentIndex().row();
+}
+
+void MainWindow::setCurrentRecordIndex(int rowIndex)
+{
+    auto index = m_passwordList->model()->index(rowIndex, 0);
+    m_passwordList->setCurrentIndex(index);
+}
+
+void MainWindow::toggleMainWindow()
+{
+    toggleWindow();
+}
+
+yaps::CryptoStatusView* MainWindow::cryptoStatusView()
+{
+    return m_toolbar;
+}
