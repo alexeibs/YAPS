@@ -85,7 +85,7 @@ void ToolbarView::clearMasterPassword() {
 }
 
 void ToolbarView::updateCryptoStatus(const CryptoStatus& cryptoStatus) {
-  clearMasterPasswordAction_->setEnabled(cryptoStatus.hasPassword());
+  clearMasterPasswordAction_->setEnabled(cryptoStatus.hasMasterPassword());
 }
 
 }  // namespace yaps

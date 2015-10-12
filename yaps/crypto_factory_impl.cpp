@@ -18,7 +18,7 @@ CryptoFactoryImpl::CryptoFactoryImpl(std::shared_ptr<CryptoEngine> engine,
       expirationTimer_(move(expirationTimer)) {
 
   expirationTimer_->setCallback([this]() {
-    clearPassword();
+    clearMasterPassword();
   });
 }
 
@@ -42,7 +42,7 @@ std::unique_ptr<Crypto> CryptoFactoryImpl::getCrypto() {
   return std::unique_ptr<Crypto>{new CryptoImpl(cryptoEngine_, shared_from_this())};
 }
 
-void CryptoFactoryImpl::clearPassword() {
+void CryptoFactoryImpl::clearMasterPassword() {
   if (passwordLocked_) {
     expirationTimer_->start(RESCHEDULE_INTERVAL);
   } else if (!masterPassword_.isEmpty()) {
@@ -52,7 +52,7 @@ void CryptoFactoryImpl::clearPassword() {
   }
 }
 
-bool CryptoFactoryImpl::hasPassword() const {
+bool CryptoFactoryImpl::hasMasterPassword() const {
   return !masterPassword_.isEmpty();
 }
 

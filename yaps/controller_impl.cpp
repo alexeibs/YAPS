@@ -3,7 +3,6 @@
 #include <QMessageBox>
 
 #include "crypto.h"
-#include "crypto_status.h"
 #include "view_state.h"
 
 #include "PasswordEditDialog.h"
@@ -13,10 +12,8 @@
 namespace yaps {
 
 ControllerImpl::ControllerImpl(std::shared_ptr<yaps::CryptoFactory> cryptoFactory,
-                               std::shared_ptr<yaps::CryptoStatus> cryptoStatus,
                                PasswordsModel& passwordsModel)
     : cryptoFactory_(cryptoFactory),
-      cryptoStatus_(cryptoStatus),
       passwordsModel_(passwordsModel) {
 }
 
@@ -134,7 +131,7 @@ void ControllerImpl::deletePassword() {
 }
 
 void ControllerImpl::clearMasterPassword() {
-  cryptoStatus_->clearPassword();
+  cryptoFactory_->clearMasterPassword();
 }
 
 }  // namespace yaps

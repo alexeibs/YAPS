@@ -27,10 +27,10 @@ struct CryptoFactoryImpl : std::enable_shared_from_this<CryptoFactoryImpl>,
 
   // CryptoFactory interface
   std::unique_ptr<Crypto> getCrypto() override;
+  void clearMasterPassword() override;
 
   // CryptoStatus interface
-  void clearPassword() override;
-  bool hasPassword() const override;
+  bool hasMasterPassword() const override;
 
   // PasswordLock interface
   const QString& lockPassword() override;

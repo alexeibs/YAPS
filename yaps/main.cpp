@@ -44,8 +44,7 @@ int main(int argc, char *argv[])
         std::make_shared<yaps::PasswordPromptImpl>(),
         std::make_shared<yaps::TimerImpl>()
     );
-    auto controller = std::make_shared<yaps::ControllerImpl>(
-        cryptoFactory, cryptoFactory, *passwordsModel);
+    auto controller = std::make_shared<yaps::ControllerImpl>(cryptoFactory, *passwordsModel);
     MainWindow mainWindow(passwordsModel, controller);
 
     controller->setViewState(&mainWindow);

@@ -9,13 +9,10 @@ class PasswordsModel;
 namespace yaps {
 
 struct CryptoFactory;
-struct CryptoStatus;
 struct ViewState;
 
 struct ControllerImpl : Controller {
-  ControllerImpl(std::shared_ptr<yaps::CryptoFactory>,
-                 std::shared_ptr<yaps::CryptoStatus>,
-                 PasswordsModel&);
+  ControllerImpl(std::shared_ptr<yaps::CryptoFactory>, PasswordsModel&);
   ~ControllerImpl();
 
   void copyToClipboard() override;
@@ -39,7 +36,6 @@ private:
 
 private:
   std::shared_ptr<yaps::CryptoFactory> cryptoFactory_;
-  std::shared_ptr<yaps::CryptoStatus> cryptoStatus_;
   PasswordsModel& passwordsModel_;
   ViewState* viewState_;
 };

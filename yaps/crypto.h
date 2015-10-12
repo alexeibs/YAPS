@@ -16,8 +16,11 @@ struct Crypto {
 
 struct CryptoFactory {
   virtual ~CryptoFactory() {}
+
   // returns null if the master password is not available
   virtual std::unique_ptr<Crypto> getCrypto() = 0;
+
+  virtual void clearMasterPassword() = 0;
 };
 
 }  // namespace yaps
