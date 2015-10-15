@@ -9,12 +9,12 @@
 
 #include "mainwindow.h"
 #include "Database.h"
-#include "PasswordsModel.h"
 
 #include "controller_impl.h"
 #include "crypto_engine_impl.h"
 #include "crypto_factory_impl.h"
 #include "password_prompt_impl.h"
+#include "passwords_model_impl.h"
 #include "timer_impl.h"
 
 #define YAPS_ID "YAPS-6d049d5f-2a4a-4910-8713-249dacbbd700"
@@ -38,17 +38,21 @@ int main(int argc, char *argv[])
     if (!setupDatabase(getDatabasePath(config)))
         return 1;
 
-    auto passwordsModel = makeModel(&application);
+    auto passwordsModel = std::make_shared<yaps::PasswordsModelImpl>();
     auto cryptoFactory = std::make_shared<yaps::CryptoFactoryImpl>(
         std::make_shared<yaps::CryptoEngineImpl>(),
         std::make_shared<yaps::PasswordPromptImpl>(),
         std::make_shared<yaps::TimerImpl>()
     );
-    auto controller = std::make_shared<yaps::ControllerImpl>(cryptoFactory, *passwordsModel);
-    MainWindow mainWindow(passwordsModel, controller);
+    auto controller = std::make_shared<yaps::ControllerImpl>(cryptoFactory, passwordsModel);
+    MainWindow mainWindow(passwordsModel.get(), controller);
 
     controller->setViewState(&mainWindow);
     cryptoFactory->setCryptoStatusView(mainWindow.cryptoStatusView());
+
+    passwordsModel.reset();
+    cryptoFactory.reset();
+    controller.reset();
 
     mainWindow.toggleWindow();
 

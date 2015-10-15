@@ -5,10 +5,9 @@
 
 #include <QDialog>
 
-#include "PasswordsModel.h"
+#include "passwords_model.h"
 
 class QLineEdit;
-struct PasswordRecord;
 
 namespace yaps {
     struct Crypto;
@@ -20,8 +19,8 @@ public:
     ~PasswordEditDialog();
     void setNameReadOnly(bool readOnly);
 
-    void setPasswordRecord(const PasswordRecord&);
-    PasswordRecord passwordRecord() const { return m_record; }
+    void setPasswordRecord(const yaps::PasswordRecord&);
+    yaps::PasswordRecord passwordRecord() const { return m_record; }
 
 public slots:
     void accept() override;
@@ -34,7 +33,7 @@ private:
     bool commit();
 
 private:
-    PasswordRecord m_record;
+    yaps::PasswordRecord m_record;
     QLineEdit* m_name;
     QLineEdit* m_login;
     QLineEdit* m_password;

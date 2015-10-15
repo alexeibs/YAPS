@@ -8,15 +8,7 @@
 #include <QFile>
 #include <QMessageBox>
 
-#include "PasswordsModel.h"
-
 #define MAX_SQL_LINE 16384
-
-PasswordsModel* makeModel(QObject* parent)
-{
-    PasswordsModel* model = new PasswordsModel(parent);
-    return model;
-}
 
 bool setupDatabase(const QString& databasePath)
 {

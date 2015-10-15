@@ -9,8 +9,10 @@
 #include <QMessageBox>
 
 #include "crypto.h"
-#include "PasswordsModel.h"
+#include "passwords_model.h"
 #include "SecureClipboard.h"
+
+using yaps::PasswordRecord;
 
 PasswordEditDialog::PasswordEditDialog(const QString& title,
                                        std::unique_ptr<yaps::Crypto> crypto)
