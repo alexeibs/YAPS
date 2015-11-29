@@ -10,6 +10,7 @@
 #include "mainwindow.h"
 #include "Database.h"
 
+#include "clipboard_impl.h"
 #include "controller_impl.h"
 #include "crypto_engine_impl.h"
 #include "crypto_factory_impl.h"
@@ -49,6 +50,7 @@ int main(int argc, char *argv[])
         cryptoFactory,
         passwordsModel,
         std::make_shared<yaps::SecureClipboardImpl>(
+            std::make_shared<yaps::ClipboardImpl>(),
             std::make_shared<yaps::TimerImpl>(),
             std::make_shared<yaps::TimerImpl>()
         )

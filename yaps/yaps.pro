@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     toolbar_view.cpp \
     controller_impl.cpp \
     passwords_model_impl.cpp \
-    secure_clipboard_impl.cpp
+    secure_clipboard_impl.cpp \
+    clipboard_impl.cpp
 
 HEADERS  += mainwindow.h \
     Database.h \
@@ -52,7 +53,9 @@ HEADERS  += mainwindow.h \
     passwords_model.h \
     passwords_model_impl.h \
     secure_clipboard.h \
-    secure_clipboard_impl.h
+    secure_clipboard_impl.h \
+    clipboard.h \
+    clipboard_impl.h
 
 RESOURCES += \
     resources/main.qrc
