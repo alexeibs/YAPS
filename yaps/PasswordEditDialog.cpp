@@ -10,17 +10,22 @@
 
 #include "crypto.h"
 #include "passwords_model.h"
-#include "SecureClipboard.h"
+#include "secure_clipboard.h"
 
 using yaps::PasswordRecord;
 
 PasswordEditDialog::PasswordEditDialog(const QString& title,
-                                       std::unique_ptr<yaps::Crypto> crypto)
+                                       std::unique_ptr<yaps::Crypto> crypto,
+                                       std::shared_ptr<yaps::SecureClipboard> clipboard)
 {
     if (!crypto) {
         throw std::logic_error("Crypto pointer is null");
     }
+    if (!clipboard) {
+        throw std::logic_error("Clipboard is null");
+    }
     m_crypto = std::move(crypto);
+    m_clipboard = std::move(clipboard);
     m_name = new QLineEdit;
     m_login = new QLineEdit;
     m_password = new QLineEdit;
@@ -146,12 +151,10 @@ void PasswordEditDialog::copyAll()
     QString login = m_login->text();
     QString password1 = m_password->text();
     QString password2 = m_password2->text();
-    QString all = login + "\n" + password1 + "\n" + password2;
 
-    SecureClipboard::instance().setContent(all);\
+    m_clipboard->setContent({login, password1, password2});
 
     m_crypto->eraseString(login);
     m_crypto->eraseString(password1);
     m_crypto->eraseString(password2);
-    m_crypto->eraseString(all);
 }

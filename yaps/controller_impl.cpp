@@ -4,17 +4,19 @@
 
 #include "crypto.h"
 #include "passwords_model.h"
+#include "secure_clipboard.h"
 #include "view_state.h"
 
 #include "PasswordEditDialog.h"
-#include "SecureClipboard.h"
 
 namespace yaps {
 
 ControllerImpl::ControllerImpl(std::shared_ptr<CryptoFactory> cryptoFactory,
-                               std::shared_ptr<PasswordsModel> passwordsModel)
+                               std::shared_ptr<PasswordsModel> passwordsModel,
+                               std::shared_ptr<SecureClipboard> clipboard)
     : cryptoFactory_(move(cryptoFactory)),
-      passwordsModel_(move(passwordsModel)) {
+      passwordsModel_(move(passwordsModel)),
+      clipboard_(move(clipboard)) {
 }
 
 ControllerImpl::~ControllerImpl() {}
@@ -68,21 +70,21 @@ void ControllerImpl::copyToClipboardImpl(Callback&& callback) {
 }
 
 void ControllerImpl::copyToClipboard() {
-  copyToClipboardImpl([](const QString& decrypted, Crypto& /*crypto*/) {
-    SecureClipboard::instance().setContent(decrypted);
+  copyToClipboardImpl([this](const QString& decrypted, Crypto& /*crypto*/) {
+    clipboard_->setContent(decrypted.split('\n'));
   });
 }
 
 void ControllerImpl::copyPasswordToClipboard() {
-  copyToClipboardImpl([](const QString& decrypted, Crypto& crypto) {
+  copyToClipboardImpl([this](const QString& decrypted, Crypto& crypto) {
     QString password = decrypted.mid(decrypted.lastIndexOf('\n') + 1);
-    SecureClipboard::instance().setContent(password);
+    clipboard_->setContent({password});
     crypto.eraseString(password);
   });
 }
 
 void yaps::ControllerImpl::copyNextItemToClipboard() {
-  SecureClipboard::instance().contentPasted();
+  clipboard_->copyNextItem();
 }
 
 void ControllerImpl::addPassword() {
@@ -92,7 +94,7 @@ void ControllerImpl::addPassword() {
       return;
 
     PasswordRecord record;
-    PasswordEditDialog dialog(QObject::tr("New password"), move(crypto));
+    PasswordEditDialog dialog(QObject::tr("New password"), move(crypto), clipboard_);
     dialog.setPasswordRecord(record);
     if (dialog.exec() == QDialog::Rejected)
       return;
@@ -119,7 +121,7 @@ void ControllerImpl::editPassword() {
     if (!crypto)
       return;
 
-    PasswordEditDialog dialog(QObject::tr("Edit password"), move(crypto));
+    PasswordEditDialog dialog(QObject::tr("Edit password"), move(crypto), clipboard_);
     dialog.setPasswordRecord(record);
     dialog.setNameReadOnly(true);
     if (dialog.exec() == QDialog::Rejected)

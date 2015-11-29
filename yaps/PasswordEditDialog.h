@@ -11,11 +11,14 @@ class QLineEdit;
 
 namespace yaps {
     struct Crypto;
+    struct SecureClipboard;
 }
 
 class PasswordEditDialog : public QDialog { Q_OBJECT
 public:
-    PasswordEditDialog(const QString& title, std::unique_ptr<yaps::Crypto>);
+    PasswordEditDialog(const QString& title,
+                       std::unique_ptr<yaps::Crypto>,
+                       std::shared_ptr<yaps::SecureClipboard>);
     ~PasswordEditDialog();
     void setNameReadOnly(bool readOnly);
 
@@ -40,6 +43,7 @@ private:
     QLineEdit* m_password2;
 
     std::unique_ptr<yaps::Crypto> m_crypto;
+    std::shared_ptr<yaps::SecureClipboard> m_clipboard;
 };
 
 #endif // PASSWORDEDITDIALOG_H

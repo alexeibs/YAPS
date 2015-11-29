@@ -17,7 +17,6 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     Database.cpp \
     View.cpp \
-    SecureClipboard.cpp \
     PasswordEditDialog.cpp \
     timer_impl.cpp \
     crypto_factory_impl.cpp \
@@ -27,12 +26,12 @@ SOURCES += main.cpp\
     password_prompt_impl.cpp \
     toolbar_view.cpp \
     controller_impl.cpp \
-    passwords_model_impl.cpp
+    passwords_model_impl.cpp \
+    secure_clipboard_impl.cpp
 
 HEADERS  += mainwindow.h \
     Database.h \
     View.h \
-    SecureClipboard.h \
     PasswordEditDialog.h \
     crypto_factory_impl.h \
     timer_impl.h \
@@ -51,7 +50,9 @@ HEADERS  += mainwindow.h \
     controller_impl.h \
     view_state.h \
     passwords_model.h \
-    passwords_model_impl.h
+    passwords_model_impl.h \
+    secure_clipboard.h \
+    secure_clipboard_impl.h
 
 RESOURCES += \
     resources/main.qrc
