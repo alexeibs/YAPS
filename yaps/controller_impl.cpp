@@ -4,19 +4,21 @@
 
 #include "crypto.h"
 #include "passwords_model.h"
+#include "password_record.h"
+#include "password_record_editor.h"
 #include "secure_clipboard.h"
 #include "view_state.h"
-
-#include "PasswordEditDialog.h"
 
 namespace yaps {
 
 ControllerImpl::ControllerImpl(std::shared_ptr<CryptoFactory> cryptoFactory,
                                std::shared_ptr<PasswordsModel> passwordsModel,
-                               std::shared_ptr<SecureClipboard> clipboard)
+                               std::shared_ptr<SecureClipboard> clipboard,
+                               std::shared_ptr<PasswordRecordEditor> recordEditor)
     : cryptoFactory_(move(cryptoFactory)),
       passwordsModel_(move(passwordsModel)),
-      clipboard_(move(clipboard)) {
+      clipboard_(move(clipboard)),
+      passwordRecordEditor_(move(recordEditor)){
 }
 
 ControllerImpl::~ControllerImpl() {}
@@ -52,15 +54,14 @@ template<typename Callback>
 void ControllerImpl::copyToClipboardImpl(Callback&& callback) {
   tryTo([this, &callback]() {
     int recordIndex = viewState().currentRecordIndex();
-    PasswordRecord record;
-    passwordsModel_->getRecord(recordIndex, record);
+    auto record = passwordsModel_->getRecord(recordIndex);
 
     auto crypto = cryptoFactory_->getCrypto();
-    if (!crypto)
+    if (!crypto) {
       return;
-
+    }
     QString decrypted;
-    crypto->decrypt(record.password, decrypted);
+    crypto->decrypt(record->password(), decrypted);
 
     callback(decrypted, *crypto);
 
@@ -90,46 +91,40 @@ void yaps::ControllerImpl::copyNextItemToClipboard() {
 void ControllerImpl::addPassword() {
   tryTo([this]() {
     auto crypto = cryptoFactory_->getCrypto();
-    if (!crypto)
+    if (!crypto) {
       return;
-
-    PasswordRecord record;
-    PasswordEditDialog dialog(QObject::tr("New password"), move(crypto), clipboard_);
-    dialog.setPasswordRecord(record);
-    if (dialog.exec() == QDialog::Rejected)
-      return;
-
-    record = dialog.passwordRecord();
-    if (passwordsModel_->hasRecord(record.name)) {
-      auto question = QObject::tr("Password \"%1\" already exists. Overwrite it?").arg(record.name);
-      auto userAnswer = QMessageBox::question(nullptr, QObject::tr("Confirm"), question);
-      if (userAnswer != QMessageBox::Yes)
-        return;
     }
-    passwordsModel_->addOrSetRecord(record);
-    viewState().setCurrentRecordIndex(passwordsModel_->getIndexByName(record.name));
+    auto record = std::make_shared<PasswordRecord>();
+    if (!passwordRecordEditor_->edit(record, move(crypto), QObject::tr("New password"))) {
+      return;
+    }
+    if (passwordsModel_->hasRecord(record->name())) {
+      auto question = QObject::tr("Password \"%1\" already exists. Overwrite it?")
+          .arg(record->name());
+      auto userAnswer = QMessageBox::question(nullptr, QObject::tr("Confirm"), question);
+      if (userAnswer != QMessageBox::Yes) {
+        return;
+      }
+    }
+    passwordsModel_->addOrSetRecord(*record);
+    viewState().setCurrentRecordIndex(passwordsModel_->getIndexByName(record->name()));
   });
 }
 
 void ControllerImpl::editPassword() {
   tryTo([this]() {
     int recordIndex = viewState().currentRecordIndex();
-    PasswordRecord record;
-    passwordsModel_->getRecord(recordIndex, record);
+    auto record = passwordsModel_->getRecord(recordIndex);
 
     auto crypto = cryptoFactory_->getCrypto();
-    if (!crypto)
+    if (!crypto) {
       return;
-
-    PasswordEditDialog dialog(QObject::tr("Edit password"), move(crypto), clipboard_);
-    dialog.setPasswordRecord(record);
-    dialog.setNameReadOnly(true);
-    if (dialog.exec() == QDialog::Rejected)
+    }
+    if (!passwordRecordEditor_->edit(record, move(crypto), QObject::tr("Edit password"))) {
       return;
-
-    record = dialog.passwordRecord();
-    passwordsModel_->addOrSetRecord(record);
-    viewState().setCurrentRecordIndex(passwordsModel_->getIndexByName(record.name));
+    }
+    passwordsModel_->addOrSetRecord(*record);
+    viewState().setCurrentRecordIndex(passwordsModel_->getIndexByName(record->name()));
   });
 }
 

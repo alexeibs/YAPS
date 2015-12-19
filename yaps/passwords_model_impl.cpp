@@ -5,16 +5,12 @@
 #include <QSqlError>
 #include <QDateTime>
 
+#include "password_record.h"
+
 namespace yaps {
 namespace {
 
 const int NAME_COLUMN = 0;
-
-void readPasswordRecord(const QSqlRecord& sqlRecord, PasswordRecord& record) {
-  record.name = sqlRecord.value("name").toString();
-  record.password = sqlRecord.value("password").toString();
-  record.timestamp = sqlRecord.value("changed_at").toUInt();
-}
 
 void checkQueryError(const QSqlQuery& query) {
   auto error = query.lastError();
@@ -79,10 +75,10 @@ bool PasswordsModelImpl::hasRecord(const QString& name) const {
   return query.size() > 0;
 }
 
-void PasswordsModelImpl::getRecord(int recordIndex, PasswordRecord& record) {
+std::shared_ptr<PasswordRecord> PasswordsModelImpl::getRecord(int recordIndex) {
   validateIndex(recordIndex);
   QSqlRecord sqlRecord = QSqlQueryModel::record(recordIndex);
-  readPasswordRecord(sqlRecord, record);
+  return std::make_shared<PasswordRecord>(sqlRecord);
 }
 
 void PasswordsModelImpl::addOrSetRecord(const PasswordRecord& record) {
@@ -92,8 +88,8 @@ void PasswordsModelImpl::addOrSetRecord(const PasswordRecord& record) {
     "INSERT OR REPLACE INTO passwords (name, password, changed_at)"
     "VALUES (?, ?, ?)"
   );
-  query.addBindValue(record.name);
-  query.addBindValue(record.password);
+  query.addBindValue(record.name());
+  query.addBindValue(record.password());
   query.addBindValue(now);
   query.exec();
   checkQueryError(query);

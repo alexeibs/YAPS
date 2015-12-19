@@ -16,7 +16,7 @@ public:
   int fixIndex(int index) override;
 
   bool hasRecord(const QString& name) const override;
-  void getRecord(int recordIndex, PasswordRecord&) override;
+  std::shared_ptr<PasswordRecord> getRecord(int recordIndex) override;
   void addOrSetRecord(const PasswordRecord&) override;
   void removeRecord(int recordIndex) override;
 

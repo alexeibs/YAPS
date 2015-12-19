@@ -10,11 +10,13 @@ struct CryptoFactory;
 struct PasswordsModel;
 struct ViewState;
 struct SecureClipboard;
+struct PasswordRecordEditor;
 
 struct ControllerImpl : Controller {
   ControllerImpl(std::shared_ptr<CryptoFactory>,
                  std::shared_ptr<PasswordsModel>,
-                 std::shared_ptr<SecureClipboard>);
+                 std::shared_ptr<SecureClipboard>,
+                 std::shared_ptr<PasswordRecordEditor>);
   ~ControllerImpl();
 
   void copyToClipboard() override;
@@ -40,6 +42,7 @@ private:
   std::shared_ptr<CryptoFactory> cryptoFactory_;
   std::shared_ptr<PasswordsModel> passwordsModel_;
   std::shared_ptr<SecureClipboard> clipboard_;
+  std::shared_ptr<PasswordRecordEditor> passwordRecordEditor_;
   ViewState* viewState_;
 };
 

@@ -14,8 +14,9 @@
 #include "controller_impl.h"
 #include "crypto_engine_impl.h"
 #include "crypto_factory_impl.h"
-#include "password_prompt_impl.h"
 #include "passwords_model_impl.h"
+#include "password_prompt_impl.h"
+#include "password_record_editor_impl.h"
 #include "secure_clipboard_impl.h"
 #include "timer_impl.h"
 
@@ -46,14 +47,16 @@ int main(int argc, char *argv[])
         std::make_shared<yaps::PasswordPromptImpl>(),
         std::make_shared<yaps::TimerImpl>()
     );
+    auto clipboard = std::make_shared<yaps::SecureClipboardImpl>(
+        std::make_shared<yaps::ClipboardImpl>(),
+        std::make_shared<yaps::TimerImpl>(),
+        std::make_shared<yaps::TimerImpl>()
+    );
     auto controller = std::make_shared<yaps::ControllerImpl>(
         cryptoFactory,
         passwordsModel,
-        std::make_shared<yaps::SecureClipboardImpl>(
-            std::make_shared<yaps::ClipboardImpl>(),
-            std::make_shared<yaps::TimerImpl>(),
-            std::make_shared<yaps::TimerImpl>()
-        )
+        clipboard,
+        std::make_shared<yaps::PasswordRecordEditorImpl>(clipboard)
     );
     MainWindow mainWindow(passwordsModel.get(), controller);
 
