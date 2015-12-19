@@ -4,10 +4,11 @@
 
 namespace yaps {
 
+struct MessageBoxFactory;
 struct SecureClipboard;
 
 struct PasswordRecordEditorImpl : PasswordRecordEditor {
-  PasswordRecordEditorImpl(std::shared_ptr<SecureClipboard>);
+  PasswordRecordEditorImpl(std::shared_ptr<SecureClipboard>, std::shared_ptr<MessageBoxFactory>);
   ~PasswordRecordEditorImpl();
 
   bool edit(std::shared_ptr<PasswordRecord>,
@@ -16,6 +17,7 @@ struct PasswordRecordEditorImpl : PasswordRecordEditor {
 
 private:
   std::shared_ptr<SecureClipboard> clipboard_;
+  std::shared_ptr<MessageBoxFactory> messageBoxFactory_;
 };
 
 }  // namespace yaps

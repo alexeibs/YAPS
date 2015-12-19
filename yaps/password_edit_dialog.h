@@ -9,6 +9,7 @@ class QLineEdit;
 namespace yaps {
 
 struct Crypto;
+struct MessageBoxFactory;
 struct PasswordRecord;
 struct SecureClipboard;
 
@@ -18,7 +19,8 @@ public:
   PasswordEditDialog(const QString& title,
                      std::shared_ptr<PasswordRecord>,
                      std::unique_ptr<Crypto>,
-                     std::shared_ptr<SecureClipboard>);
+                     std::shared_ptr<SecureClipboard>,
+                     std::shared_ptr<MessageBoxFactory>);
   ~PasswordEditDialog();
 
 public slots:
@@ -41,6 +43,7 @@ private:
   std::shared_ptr<PasswordRecord> record_;
   std::unique_ptr<Crypto> crypto_;
   std::shared_ptr<SecureClipboard> clipboard_;
+  std::shared_ptr<MessageBoxFactory> messageBoxFactory_;
 };
 
 }  // namespace yaps

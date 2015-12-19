@@ -6,9 +6,9 @@
 #include <QFormLayout>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QMessageBox>
 
 #include "crypto.h"
+#include "message_box_factory.h"
 #include "password_record.h"
 #include "secure_clipboard.h"
 
@@ -17,10 +17,12 @@ namespace yaps {
 PasswordEditDialog::PasswordEditDialog(const QString& title,
                                        std::shared_ptr<PasswordRecord> record,
                                        std::unique_ptr<Crypto> crypto,
-                                       std::shared_ptr<SecureClipboard> clipboard)
+                                       std::shared_ptr<SecureClipboard> clipboard,
+                                       std::shared_ptr<MessageBoxFactory> messageBoxFactory)
     : record_(std::move(record)),
       crypto_(std::move(crypto)),
-      clipboard_(std::move(clipboard)) {
+      clipboard_(std::move(clipboard)),
+      messageBoxFactory_(std::move(messageBoxFactory)) {
   if (!record_) {
     throw std::logic_error("PasswordRecord is null");
   }
@@ -96,15 +98,15 @@ void PasswordEditDialog::initControls() {
 void PasswordEditDialog::accept() {
   // validate user input
   if (nameEdit_->text().isEmpty()) {
-    QMessageBox::warning(this, tr("Error"), tr("Name should not be empty."));
+    messageBoxFactory_->showWarning(tr("Error"), tr("Name should not be empty."));
     return;
   }
   if (passwordEdit1_->text().isEmpty()) {
-    QMessageBox::warning(this, tr("Error"), tr("Password should not be empty."));
+    messageBoxFactory_->showWarning(tr("Error"), tr("Password should not be empty."));
     return;
   }
   if (passwordEdit1_->text() != passwordEdit2_->text()) {
-    QMessageBox::warning(this, tr("Error"), tr("Passwords do not match."));
+    messageBoxFactory_->showWarning(tr("Error"), tr("Passwords do not match."));
     return;
   }
 

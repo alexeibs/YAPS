@@ -14,6 +14,7 @@
 #include "controller_impl.h"
 #include "crypto_engine_impl.h"
 #include "crypto_factory_impl.h"
+#include "message_box_factory_impl.h"
 #include "passwords_model_impl.h"
 #include "password_prompt_impl.h"
 #include "password_record_editor_impl.h"
@@ -52,14 +53,17 @@ int main(int argc, char *argv[])
         std::make_shared<yaps::TimerImpl>(),
         std::make_shared<yaps::TimerImpl>()
     );
+    auto messageBoxFactory = std::make_shared<yaps::MessageBoxFactoryImpl>();
     auto controller = std::make_shared<yaps::ControllerImpl>(
         cryptoFactory,
         passwordsModel,
         clipboard,
-        std::make_shared<yaps::PasswordRecordEditorImpl>(clipboard)
+        messageBoxFactory,
+        std::make_shared<yaps::PasswordRecordEditorImpl>(clipboard, messageBoxFactory)
     );
     MainWindow mainWindow(passwordsModel.get(), controller);
 
+    messageBoxFactory->setParentWindow(&mainWindow);
     controller->setViewState(&mainWindow);
     cryptoFactory->setCryptoStatusView(mainWindow.cryptoStatusView());
 

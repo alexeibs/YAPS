@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     clipboard_impl.cpp \
     password_record.cpp \
     password_record_editor_impl.cpp \
-    password_edit_dialog.cpp
+    password_edit_dialog.cpp \
+    message_box_factory_impl.cpp
 
 HEADERS  += mainwindow.h \
     Database.h \
@@ -60,7 +61,9 @@ HEADERS  += mainwindow.h \
     password_record.h \
     password_record_editor.h \
     password_record_editor_impl.h \
-    password_edit_dialog.h
+    password_edit_dialog.h \
+    message_box_factory.h \
+    message_box_factory_impl.h
 
 RESOURCES += \
     resources/main.qrc

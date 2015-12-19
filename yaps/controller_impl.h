@@ -7,15 +7,17 @@
 namespace yaps {
 
 struct CryptoFactory;
-struct PasswordsModel;
-struct ViewState;
-struct SecureClipboard;
+struct MessageBoxFactory;
 struct PasswordRecordEditor;
+struct PasswordsModel;
+struct SecureClipboard;
+struct ViewState;
 
 struct ControllerImpl : Controller {
   ControllerImpl(std::shared_ptr<CryptoFactory>,
                  std::shared_ptr<PasswordsModel>,
                  std::shared_ptr<SecureClipboard>,
+                 std::shared_ptr<MessageBoxFactory>,
                  std::shared_ptr<PasswordRecordEditor>);
   ~ControllerImpl();
 
@@ -42,6 +44,7 @@ private:
   std::shared_ptr<CryptoFactory> cryptoFactory_;
   std::shared_ptr<PasswordsModel> passwordsModel_;
   std::shared_ptr<SecureClipboard> clipboard_;
+  std::shared_ptr<MessageBoxFactory> messageBoxFactory_;
   std::shared_ptr<PasswordRecordEditor> passwordRecordEditor_;
   ViewState* viewState_;
 };

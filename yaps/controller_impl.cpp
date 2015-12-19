@@ -1,8 +1,7 @@
 #include "controller_impl.h"
 
-#include <QMessageBox>
-
 #include "crypto.h"
+#include "message_box_factory.h"
 #include "passwords_model.h"
 #include "password_record.h"
 #include "password_record_editor.h"
@@ -14,11 +13,13 @@ namespace yaps {
 ControllerImpl::ControllerImpl(std::shared_ptr<CryptoFactory> cryptoFactory,
                                std::shared_ptr<PasswordsModel> passwordsModel,
                                std::shared_ptr<SecureClipboard> clipboard,
+                               std::shared_ptr<MessageBoxFactory> messageBoxFactory,
                                std::shared_ptr<PasswordRecordEditor> recordEditor)
     : cryptoFactory_(move(cryptoFactory)),
       passwordsModel_(move(passwordsModel)),
       clipboard_(move(clipboard)),
-      passwordRecordEditor_(move(recordEditor)){
+      messageBoxFactory_(move(messageBoxFactory)),
+      passwordRecordEditor_(move(recordEditor)) {
 }
 
 ControllerImpl::~ControllerImpl() {}
@@ -42,17 +43,17 @@ const ViewState& ControllerImpl::viewState() const {
 }
 
 template<typename Callback>
-void tryTo(Callback&& callback) {
+void tryTo(MessageBoxFactory& messageBoxFactory, Callback&& callback) {
   try {
     callback();
   } catch (std::exception& exception) {
-    QMessageBox::critical(nullptr, QObject::tr("Error"), exception.what());
+    messageBoxFactory.showError(QObject::tr("Error"), exception.what());
   }
 }
 
 template<typename Callback>
 void ControllerImpl::copyToClipboardImpl(Callback&& callback) {
-  tryTo([this, &callback]() {
+  tryTo(*messageBoxFactory_, [this, &callback]() {
     int recordIndex = viewState().currentRecordIndex();
     auto record = passwordsModel_->getRecord(recordIndex);
 
@@ -89,7 +90,7 @@ void yaps::ControllerImpl::copyNextItemToClipboard() {
 }
 
 void ControllerImpl::addPassword() {
-  tryTo([this]() {
+  tryTo(*messageBoxFactory_, [this]() {
     auto crypto = cryptoFactory_->getCrypto();
     if (!crypto) {
       return;
@@ -101,8 +102,7 @@ void ControllerImpl::addPassword() {
     if (passwordsModel_->hasRecord(record->name())) {
       auto question = QObject::tr("Password \"%1\" already exists. Overwrite it?")
           .arg(record->name());
-      auto userAnswer = QMessageBox::question(nullptr, QObject::tr("Confirm"), question);
-      if (userAnswer != QMessageBox::Yes) {
+      if (!messageBoxFactory_->askYesNo(QObject::tr("Confirm"), question)) {
         return;
       }
     }
@@ -112,7 +112,7 @@ void ControllerImpl::addPassword() {
 }
 
 void ControllerImpl::editPassword() {
-  tryTo([this]() {
+  tryTo(*messageBoxFactory_, [this]() {
     int recordIndex = viewState().currentRecordIndex();
     auto record = passwordsModel_->getRecord(recordIndex);
 
@@ -129,7 +129,7 @@ void ControllerImpl::editPassword() {
 }
 
 void ControllerImpl::deletePassword() {
-  tryTo([this]() {
+  tryTo(*messageBoxFactory_, [this]() {
     int recordIndex = viewState().currentRecordIndex();
     passwordsModel_->removeRecord(recordIndex);
     viewState().setCurrentRecordIndex(passwordsModel_->fixIndex(recordIndex));
