@@ -21,7 +21,6 @@ SOURCES += main.cpp\
     crypto_factory_impl.cpp \
     crypto_impl.cpp \
     crypto_engine_impl.cpp \
-    GlobalPasswordDialog.cpp \
     password_prompt_impl.cpp \
     toolbar_view.cpp \
     controller_impl.cpp \
@@ -31,7 +30,8 @@ SOURCES += main.cpp\
     password_record.cpp \
     password_record_editor_impl.cpp \
     password_edit_dialog.cpp \
-    message_box_factory_impl.cpp
+    message_box_factory_impl.cpp \
+    global_password_dialog.cpp
 
 HEADERS  += mainwindow.h \
     Database.h \
@@ -46,7 +46,6 @@ HEADERS  += mainwindow.h \
     password_lock.h \
     crypto.h \
     password_prompt.h \
-    GlobalPasswordDialog.h \
     password_prompt_impl.h \
     toolbar_view.h \
     controller.h \
@@ -63,7 +62,8 @@ HEADERS  += mainwindow.h \
     password_record_editor_impl.h \
     password_edit_dialog.h \
     message_box_factory.h \
-    message_box_factory_impl.h
+    message_box_factory_impl.h \
+    global_password_dialog.h
 
 RESOURCES += \
     resources/main.qrc

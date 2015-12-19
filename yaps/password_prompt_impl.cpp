@@ -1,6 +1,6 @@
 #include "password_prompt_impl.h"
 
-#include "GlobalPasswordDialog.h"
+#include "global_password_dialog.h"
 
 namespace yaps {
 
