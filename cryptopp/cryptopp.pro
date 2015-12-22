@@ -3,9 +3,13 @@
 ######################################################################
 
 TEMPLATE = lib
-TARGET = cryptopp562
+TARGET = cryptopp
 INCLUDEPATH += .
 LIBS += -lws2_32
+
+QT       -= core gui
+
+QMAKE_CXXFLAGS += -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function
 
 # Input
 HEADERS += 3way.h \
