@@ -7,19 +7,19 @@
 #include <QJsonObject>
 #include <QJsonObject>
 
-#include "mainwindow.h"
-#include "Database.h"
+#include "yapslib/mainwindow.h"
+#include "yapslib/Database.h"
 
-#include "clipboard_impl.h"
-#include "controller_impl.h"
-#include "crypto_engine_impl.h"
-#include "crypto_factory_impl.h"
-#include "message_box_factory_impl.h"
-#include "passwords_model_impl.h"
-#include "password_prompt_impl.h"
-#include "password_record_editor_impl.h"
-#include "secure_clipboard_impl.h"
-#include "timer_impl.h"
+#include "yapslib/clipboard_impl.h"
+#include "yapslib/controller_impl.h"
+#include "yapslib/crypto_engine_impl.h"
+#include "yapslib/crypto_factory_impl.h"
+#include "yapslib/message_box_factory_impl.h"
+#include "yapslib/passwords_model_impl.h"
+#include "yapslib/password_prompt_impl.h"
+#include "yapslib/password_record_editor_impl.h"
+#include "yapslib/secure_clipboard_impl.h"
+#include "yapslib/timer_impl.h"
 
 #define YAPS_ID "YAPS-6d049d5f-2a4a-4910-8713-249dacbbd700"
 
@@ -31,6 +31,7 @@ static QString getDatabasePath(const QJsonDocument&);
 int main(int argc, char *argv[])
 {
     QApplication application(argc, argv);
+    Q_INIT_RESOURCE(main);
     QScopedPointer<QSharedMemory> singleAppGuard(createSharedMemory());
     if (!singleAppGuard)
         return 0;

@@ -3,6 +3,8 @@ TEMPLATE = subdirs
 SUBDIRS += \
     cryptopp \
     kbhook \
-    yaps
+    yaps \
+    yapslib
 
-yaps.depends = cryptopp kbhook
+yapslib.depends = cryptopp kbhook
+yaps.depends = yapslib

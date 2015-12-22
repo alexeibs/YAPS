@@ -8,6 +8,7 @@ set CRYPTO_DIR=cryptopp\release
 set KBHOOK_DIR=kbhook\release
 set YAPS_DIR=yaps\release
 set YAPS_SRC_DIR=..\yaps
+set YAPSLIB_DIR=..\yapslib
 
 cd /d %BUILD_DIR%
 
@@ -16,7 +17,7 @@ qmake ..\yaps-all.pro
 if ERRORLEVEL 1 goto qmake_failed
 
 echo -- Update translations...
-call lrelease %YAPS_SRC_DIR%\yaps.pro
+call lrelease %YAPSLIB_DIR%\yapslib.pro
 if ERRORLEVEL 1 goto tr_failed
 
 echo -- Running make...
