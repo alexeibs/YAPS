@@ -7,9 +7,6 @@
 
 namespace yaps {
 
-const int EXPIRATION_INTERVAL = 300000;
-const int RESCHEDULE_INTERVAL = 100;
-
 CryptoFactoryImpl::CryptoFactoryImpl(std::shared_ptr<CryptoEngine> engine,
                                      std::shared_ptr<PasswordPrompt> prompt,
                                      std::shared_ptr<Timer> expirationTimer)
@@ -24,7 +21,7 @@ CryptoFactoryImpl::CryptoFactoryImpl(std::shared_ptr<CryptoEngine> engine,
 
 CryptoFactoryImpl::~CryptoFactoryImpl() {
   expirationTimer_->stop();
-  eraseString(masterPassword_);
+  cryptoEngine_->eraseString(masterPassword_);
 }
 
 std::unique_ptr<Crypto> CryptoFactoryImpl::getCrypto() {
@@ -33,10 +30,10 @@ std::unique_ptr<Crypto> CryptoFactoryImpl::getCrypto() {
     if (masterPassword_.isEmpty()) {
       return {};
     }
+    triggerStatusViewUpdate();
   }
 
   expirationTimer_->start(EXPIRATION_INTERVAL);
-  triggerStatusViewUpdate();
 
   // gcc 4.8 doesn't support std::make_unique
   return std::unique_ptr<Crypto>{new CryptoImpl(cryptoEngine_, shared_from_this())};
@@ -47,7 +44,7 @@ void CryptoFactoryImpl::clearMasterPassword() {
     expirationTimer_->start(RESCHEDULE_INTERVAL);
   } else if (!masterPassword_.isEmpty()) {
     expirationTimer_->stop();
-    eraseString(masterPassword_);
+    cryptoEngine_->eraseString(masterPassword_);
     triggerStatusViewUpdate();
   }
 }

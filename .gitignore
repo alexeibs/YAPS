@@ -1,3 +1,4 @@
 /build*/
 *.pro.user
 /yapslib/resources/*.qm
+/googletest

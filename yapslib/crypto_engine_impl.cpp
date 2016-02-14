@@ -188,6 +188,10 @@ void CryptoEngineImpl::generatePassword(QString& password) {
   generateRandomPassword(password, GENERATED_PASSWORD_SIZE);
 }
 
+void CryptoEngineImpl::eraseString(QString& stringToErase) {
+  yaps::eraseString(stringToErase);
+}
+
 void eraseString(QString& stringToErase) {
   eraseString<QString>(stringToErase);
 }

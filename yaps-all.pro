@@ -4,7 +4,8 @@ SUBDIRS += \
     cryptopp \
     kbhook \
     yaps \
-    yapslib
+    yapslib \
+    tests
 
 yapslib.depends = cryptopp kbhook
 yaps.depends = yapslib

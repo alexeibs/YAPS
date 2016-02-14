@@ -37,6 +37,9 @@ struct YAPSLIB_API CryptoFactoryImpl : std::enable_shared_from_this<CryptoFactor
   const QString& lockPassword() override;
   void unlockPassword() override;
 
+  static const int EXPIRATION_INTERVAL = 300000;
+  static const int RESCHEDULE_INTERVAL = 100;
+
 private:
   void triggerStatusViewUpdate();
 
