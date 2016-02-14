@@ -18,7 +18,8 @@ TEMPLATE = app
 SOURCES += \
     main.cpp \
     crypto_factory_test.cpp \
-    test_helpers.cpp
+    test_helpers.cpp \
+    crypto_engine_test.cpp
 
 HEADERS += \
     crypto_engine_mock.h \

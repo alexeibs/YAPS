@@ -83,7 +83,7 @@ void cleanStringFromNoise(std::string& s) {
   if (left == std::string::npos)
     left = 0;
 
-  if (right == left + 1)
+  if (right <= left)
     return;
 
   std::string buffer = s.substr(left + 1, right - left - 1);
@@ -136,19 +136,6 @@ void twofishDecrypt(const QString& input, QString& output, const Key& key) {
   eraseString(inputStd);
   eraseString(outputStd);
 }
-
-//static void testTwofish(const QString& password, const QString& message)
-//{
-//    Key key, key2;
-//    makeKeyFromPassword(password, key);
-//    memcpy(key2, key, sizeof(key));
-//    QString encrypted, decrypted;
-//    twofishEncrypt(message, encrypted, key);
-//    twofishDecrypt(encrypted, decrypted, key2);
-//    qDebug() << message;
-//    qDebug() << encrypted;
-//    qDebug() << decrypted;
-//}
 
 void generateRandomPassword(QString& password, int length) {
   // Generate a random block
