@@ -1,13 +1,14 @@
 #pragma once
 
 #include "crypto_engine.h"
+#include "expimp.h"
 
 namespace yaps {
 
-struct CryptoEngineImpl : CryptoEngine {
-  void encrypt(const QString& password, const QString& input, QString& output);
-  void decrypt(const QString& password, const QString& input, QString& output);
-  void generatePassword(QString& password);
+struct YAPSLIB_API CryptoEngineImpl : CryptoEngine {
+  void encrypt(const QString& password, const QString& input, QString& output) override;
+  void decrypt(const QString& password, const QString& input, QString& output) override;
+  void generatePassword(QString& password) override;
 };
 
 }  // namespace yaps

@@ -3,13 +3,14 @@
 #include <memory>
 
 #include "crypto.h"
+#include "expimp.h"
 
 namespace yaps {
 
 struct CryptoEngine;
 struct PasswordLock;
 
-struct CryptoImpl : Crypto {
+struct YAPSLIB_API CryptoImpl : Crypto {
   CryptoImpl(std::shared_ptr<CryptoEngine> engine, std::shared_ptr<PasswordLock> passwordLock);
   ~CryptoImpl();
 

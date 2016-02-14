@@ -6,6 +6,7 @@
 
 #include "crypto.h"
 #include "crypto_status.h"
+#include "expimp.h"
 #include "password_lock.h"
 
 namespace yaps {
@@ -14,7 +15,7 @@ struct CryptoEngine;
 struct PasswordPrompt;
 struct Timer;
 
-struct CryptoFactoryImpl : std::enable_shared_from_this<CryptoFactoryImpl>,
+struct YAPSLIB_API CryptoFactoryImpl : std::enable_shared_from_this<CryptoFactoryImpl>,
                            CryptoFactory,
                            CryptoStatus,
                            PasswordLock {

@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "controller.h"
+#include "expimp.h"
 
 namespace yaps {
 
@@ -13,7 +14,7 @@ struct PasswordsModel;
 struct SecureClipboard;
 struct ViewState;
 
-struct ControllerImpl : Controller {
+struct YAPSLIB_API ControllerImpl : Controller {
   ControllerImpl(std::shared_ptr<CryptoFactory>,
                  std::shared_ptr<PasswordsModel>,
                  std::shared_ptr<SecureClipboard>,

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "expimp.h"
 #include "password_record_editor.h"
 
 namespace yaps {
@@ -7,7 +8,7 @@ namespace yaps {
 struct MessageBoxFactory;
 struct SecureClipboard;
 
-struct PasswordRecordEditorImpl : PasswordRecordEditor {
+struct YAPSLIB_API PasswordRecordEditorImpl : PasswordRecordEditor {
   PasswordRecordEditorImpl(std::shared_ptr<SecureClipboard>, std::shared_ptr<MessageBoxFactory>);
   ~PasswordRecordEditorImpl();
 

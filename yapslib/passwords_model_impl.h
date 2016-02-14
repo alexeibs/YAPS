@@ -2,11 +2,12 @@
 
 #include <QSqlQueryModel>
 
+#include "expimp.h"
 #include "passwords_model.h"
 
 namespace yaps {
 
-class PasswordsModelImpl : public QSqlQueryModel, public PasswordsModel {
+class YAPSLIB_API PasswordsModelImpl : public QSqlQueryModel, public PasswordsModel {
   Q_OBJECT
 public:
   PasswordsModelImpl();

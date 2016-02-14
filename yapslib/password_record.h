@@ -2,11 +2,13 @@
 
 #include <QString>
 
+#include "expimp.h"
+
 class QSqlRecord;
 
 namespace yaps {
 
-struct PasswordRecord {
+struct YAPSLIB_API PasswordRecord {
   PasswordRecord();
   PasswordRecord(const QSqlRecord&);
 

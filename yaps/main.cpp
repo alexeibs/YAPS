@@ -31,7 +31,6 @@ static QString getDatabasePath(const QJsonDocument&);
 int main(int argc, char *argv[])
 {
     QApplication application(argc, argv);
-    Q_INIT_RESOURCE(main);
     QScopedPointer<QSharedMemory> singleAppGuard(createSharedMemory());
     if (!singleAppGuard)
         return 0;

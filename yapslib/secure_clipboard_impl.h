@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "expimp.h"
 #include "secure_clipboard.h"
 
 namespace yaps {
@@ -9,7 +10,7 @@ namespace yaps {
 struct Clipboard;
 struct Timer;
 
-struct SecureClipboardImpl : SecureClipboard {
+struct YAPSLIB_API SecureClipboardImpl : SecureClipboard {
   SecureClipboardImpl(std::shared_ptr<Clipboard>,
                       std::shared_ptr<Timer> clearTimer,
                       std::shared_ptr<Timer> nextTimer);

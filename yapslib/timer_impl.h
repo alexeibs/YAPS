@@ -1,15 +1,17 @@
 #pragma once
 
-#include <QObject>
 #include <memory>
 
+#include <QObject>
+
+#include "expimp.h"
 #include "timer.h"
 
 class QTimer;
 
 namespace yaps {
 
-struct TimerImpl : QObject, Timer {
+struct YAPSLIB_API TimerImpl : QObject, Timer {
   TimerImpl();
 
   // throws std::logic_error if the callback is not a valid callable object

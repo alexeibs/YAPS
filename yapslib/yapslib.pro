@@ -8,7 +8,8 @@ QT       += widgets sql
 
 TARGET = yapslib
 TEMPLATE = lib
-CONFIG += staticlib c++11
+CONFIG += c++11
+DEFINES += YAPSLIB_EXPORTS
 
 SOURCES += clipboard_impl.cpp \
     controller_impl.cpp \
@@ -59,7 +60,8 @@ HEADERS += clipboard.h \
     timer_impl.h \
     toolbar_view.h \
     View.h \
-    view_state.h
+    view_state.h \
+    expimp.h
 
 RESOURCES += \
     resources/main.qrc

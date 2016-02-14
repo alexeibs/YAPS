@@ -1,8 +1,7 @@
-#ifndef DATABASE_H
-#define DATABASE_H
+#pragma once
+
+#include "expimp.h"
 
 class QString;
 
-bool setupDatabase(const QString& databasePath);
-
-#endif // DATABASE_H
+YAPSLIB_API bool setupDatabase(const QString& databasePath);

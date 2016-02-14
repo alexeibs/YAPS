@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QSystemTrayIcon>
 
+#include "expimp.h"
 #include "view_state.h"
 
 class QListView;
@@ -17,7 +18,7 @@ namespace yaps {
     struct ToolbarView;
 }
 
-class MainWindow : public QWidget, public yaps::ViewState {
+class YAPSLIB_API MainWindow : public QWidget, public yaps::ViewState {
   Q_OBJECT
 public:
     explicit MainWindow(QAbstractItemModel* passwordsModel, std::shared_ptr<yaps::Controller>);
